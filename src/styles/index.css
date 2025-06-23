@@ -1,0 +1,70 @@
+:root {
+  line-height: 1.5;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --primayColor: #4C280A;
+  --secondColor: #D78325;
+  --thirdColor: #844511;
+  --fourthColor: #935831;
+  --backgroundColor: #E5DCD3;
+  --darkTextColor: #2E2C2A;
+  --lightTextColor: #F5F5F5
+}
+
+h2 {
+  margin: 0px;
+}
+
+a {
+  font-weight: 500;
+  color: var(--secondColor);
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: var(--thirdColor);
+}
+
+body {
+  margin: 0;
+  display: flex;
+  /* place-items: center; */
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+.custom-button {
+  background-color: var(--secondColor) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.custom-button:hover,
+.custom-button:focus {
+  background-color: var(--thirdColor);
+  outline: none;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: var(--darkTextColor);
+    background-color: var(--backgroundColor);
+  }
+
+  a:hover {
+    color: var(--thirdColor);
+  }
+}

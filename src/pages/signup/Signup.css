@@ -63,7 +63,7 @@ body {
 
     .main {
         width: 100vw;
-        padding: 0px;
+        padding: 10px;
         display: flex;
         flex-direction: column;
         align-items: center;

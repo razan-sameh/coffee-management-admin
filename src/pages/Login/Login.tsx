@@ -1,20 +1,37 @@
 import { imagePaths } from '../../assets/imagePaths'
 import './Login.css'
-import { Checkbox, FormControlLabel, Stack, Button, Box, TextField } from '@mui/material'
+import { Checkbox, FormControlLabel, Stack, Button, Box, TextField, IconButton } from '@mui/material'
 import GoogleIcon from '@mui/icons-material/Google';
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useForm, type SubmitHandler } from 'react-hook-form';
+import { regEmail, regPassword } from '../../utils/RegExp';
+import { useAppDispatch } from '../../redux/store';
+import { loginUser, loginUserWithFacebook, loginUserWithGoogle } from '../../redux/slices/authSlice';
+
 interface IFormInput {
   email: string
   password: string
 }
 export default function Login() {
+  const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>()
-  const regEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  const regPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
+  const dispatch = useAppDispatch();
+
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    console.log(data)
+    dispatch(loginUser(data)).unwrap().then(() => {
+      navigate('/')
+    })
+  };
+  function loginWithGoogle() {
+    dispatch(loginUserWithGoogle()).unwrap().then(() => {
+      navigate('/')
+    })
+  }
+  function loginWithFacebook() {
+    dispatch(loginUserWithFacebook()).unwrap().then(() => {
+      navigate('/')
+    })
   }
   return (
     <div className='main'>
@@ -37,7 +54,7 @@ export default function Login() {
           <TextField
             error={Boolean(errors.email)}
             helperText={errors.email ? "Enter a valid email address (e.g. name@example.com)." : null}
-            {...register("email", {  required:true, pattern: regEmail })}
+            {...register("email", { required: true, pattern: regEmail })}
             id="email"
             variant="filled"
             sx={{
@@ -53,7 +70,7 @@ export default function Login() {
           <TextField
             error={Boolean(errors.password)}
             helperText={errors.password ? "Password must be 8+ chars, include uppercase, lowercase, number, and special (!@#$%^&*)." : null}
-            {...register("password", { required:true, pattern: regPassword })}
+            {...register("password", { required: true, pattern: regPassword })}
             id="password"
             variant="filled"
             sx={{
@@ -88,8 +105,12 @@ export default function Login() {
       </Box>
       <p>or sign in with other accounts?</p>
       <Stack direction={'row'} sx={{ justifyContent: 'center', alignItems: 'center' }}>
-        <GoogleIcon />
-        <FacebookRoundedIcon />
+        <IconButton onClick={loginWithGoogle} aria-label="Login with Google">
+          <GoogleIcon fontSize="large" />
+        </IconButton>
+        <IconButton onClick={loginWithFacebook} aria-label="Login with Facebook">
+          <FacebookRoundedIcon fontSize="large" />
+        </IconButton>
       </Stack>
       <p>
         Don’t have an account?{' '}

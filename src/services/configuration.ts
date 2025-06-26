@@ -1,5 +1,6 @@
 // Import the necessary Firebase modules
 import { initializeApp } from "firebase/app";
+import { FacebookAuthProvider, GoogleAuthProvider } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
 // Your Firebase config here
@@ -17,6 +18,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const cong = initializeApp(firebaseConfig);
 export const database = getDatabase(cong);
+export const googleProvider = new GoogleAuthProvider();
+export const faceBookprovider = new FacebookAuthProvider();
 
 export default cong;
 // Now you can use Firebase services in your React app!

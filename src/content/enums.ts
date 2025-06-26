@@ -10,3 +10,9 @@ export enum enmRole {
     manager = 'Manager',
     customer = 'Customer'
 }
+export enum enmToastSeverity {
+    success = 'success',
+    info = 'info',
+    warning = 'warning',
+    error = 'error'
+}

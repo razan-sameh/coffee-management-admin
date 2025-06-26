@@ -9,12 +9,13 @@ import { Provider } from 'react-redux'
 import AuthProvider from './provider/AuthProvider'
 import ProtectedRoute from './components/ProtectedRoute'
 import { store } from './redux/store'
+import ToastProvider from './provider/ToastProvider'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <AuthProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
@@ -27,8 +28,9 @@ createRoot(document.getElementById('root')!).render(
             {/* Optionally handle 404 */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+          <ToastProvider />
+        </AuthProvider>
+      </BrowserRouter>
     </Provider>
   </StrictMode>,
 )

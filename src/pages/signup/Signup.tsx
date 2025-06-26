@@ -1,16 +1,14 @@
 import { imagePaths } from '../../assets/imagePaths'
 import './Signup.css'
-import { Checkbox, FormControlLabel, Stack, Button, Box, TextField, Grid, MenuItem, Alert } from '@mui/material'
+import { Checkbox, FormControlLabel, Stack, Button, Box, TextField, Grid, MenuItem, IconButton } from '@mui/material'
 import GoogleIcon from '@mui/icons-material/Google';
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
-import app from '../../services/configuration'; // adjust the path
-import { useState } from 'react';
-import type { typUser } from '../../content/types';
-import { insertUser } from '../../database/insert';
 import { enmRole } from '../../content/enums';
+import { phoneRegExp, regEmail, regPassword } from '../../utils/RegExp';
+import { loginUserWithFacebook, loginUserWithGoogle, signupUser } from '../../redux/slices/authSlice';
+import { useAppDispatch } from '../../redux/store';
 
 interface IFormInput {
   firstName: string,
@@ -21,11 +19,10 @@ interface IFormInput {
   role: { label: string; value: string }
 }
 export default function Signup() {
-  const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>()
-  const [reqError, setReqError] = useState<string | null>(null)
-  const regEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  const regPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
-  const phoneRegExp = /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
+  const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const role = [
     {
       value: enmRole.admin,
@@ -40,38 +37,22 @@ export default function Signup() {
       label: enmRole.user,
     },
   ];
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    console.log(data)
-    console.log('data.role.value',data.role);
-    const auth = getAuth(app);
-    createUserWithEmailAndPassword(auth, data.email, data.password)
-      .then((res) => {
-        
-        console.log(res)
-        const user: typUser = {
-          Uid: res.user.uid,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phoneNumber: data.phone,
-          password: data.password,
-          role: data.role 
-        }
-        insertUser(user)
-        console.log('User account created & signed in!');
-      })
-      .catch((error) => {
-        console.log(error.message); // helpful to log for debugging
-        if (error.code === 'auth/email-already-in-use') {
-          setReqError("That email address is already in use!");
-        } else if (error.code === 'auth/invalid-email') {
-          setReqError("That email address is invalid!");
-        } else {
-          setReqError("Authentication failed.");
-        }
-      });
-  }
 
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  dispatch(signupUser(data)).unwrap().then(() => {
+    navigate('/')
+  })
+};
+  function loginWithGoogle() {
+    dispatch(loginUserWithGoogle()).unwrap().then(() => {
+      navigate('/')
+    })
+  }
+  function loginWithFacebook() {
+    dispatch(loginUserWithFacebook()).unwrap().then(() => {
+      navigate('/')
+    })
+  }
   return (
     <div className='main'>
       <img src={imagePaths.logo} alt="Logo" className='logo' />
@@ -227,8 +208,12 @@ export default function Signup() {
       </Box>
       <p>or sign in with other accounts?</p>
       <Stack direction={'row'} sx={{ justifyContent: 'center', alignItems: 'center' }}>
-        <GoogleIcon />
-        <FacebookRoundedIcon />
+        <IconButton onClick={loginWithGoogle} aria-label="Login with Google">
+          <GoogleIcon fontSize="large" />
+        </IconButton>
+        <IconButton onClick={loginWithFacebook} aria-label="Login with Facebook">
+          <FacebookRoundedIcon fontSize="large" />
+        </IconButton>
       </Stack>
       <p>
         Already have an Account{' '}
@@ -236,12 +221,7 @@ export default function Signup() {
           sign in
         </Link>
       </p>
-      {
-        reqError &&
-        <Alert variant="filled" severity="error">
-          {reqError}
-        </Alert>
-      }
+
     </div>
   )
 }

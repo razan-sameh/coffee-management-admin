@@ -1,6 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 :root {
   line-height: 1.5;
-  font-family: "Inter", sans-serif;
+  font-family: "Inter", sans-serif !important;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
@@ -35,7 +36,7 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
+  /* display: flex; */
   /* place-items: center; */
   min-width: 320px;
   min-height: 100vh;
@@ -56,15 +57,4 @@ h1 {
 .custom-button:focus {
   background-color: var(--thirdColor);
   outline: none;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: var(--darkTextColor);
-    background-color: var(--backgroundColor);
-  }
-
-  a:hover {
-    color: var(--thirdColor);
-  }
 }

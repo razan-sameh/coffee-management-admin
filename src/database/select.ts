@@ -14,3 +14,15 @@ export const getUserInfo = (
     // Returns unsubscribe function to detach listener
     return () => off(userRef, 'value', listener);
 };
+export const getAllUsers = (
+    callback: (users: Record<string, typUser>) => void
+): () => void => {
+    const usersRef = ref(database, "/user");
+    const listener = onValue(usersRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) callback(data as Record<string, typUser>);
+    });
+
+    // Returns unsubscribe function
+    return () => off(usersRef, "value", listener);
+};

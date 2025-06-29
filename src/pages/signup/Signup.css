@@ -9,12 +9,14 @@ body {
     padding: 0;
 }
 
-body {
+.body {
     background-image: url("../../assets/images/CupCoffee.png");
     background-repeat: no-repeat;
     background-position: right;
     background-size: 30%;
+    width: 100vw;
 }
+
 
 .main {
     height: 100vh;

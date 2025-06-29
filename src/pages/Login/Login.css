@@ -9,11 +9,12 @@ body {
     padding: 0;
 }
 
-body {
+.body {
     background-image: url("../../assets/images/CupCoffee.png");
     background-repeat: no-repeat;
     background-position: right;
     background-size: 30%;
+    width: 100vw;
 }
 
 .main {
@@ -41,10 +42,12 @@ body {
     cursor: pointer;
     /* Optional: makes it look clickable */
 }
-.sign-button{
+
+.sign-button {
     width: 100px;
     align-self: center;
 }
+
 @media ((max-width: 1100px) and (min-width:767px)) {
     body {
         background-size: 40%;

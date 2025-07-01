@@ -1,6 +1,6 @@
-// authSlice.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInWithPopup } from 'firebase/auth';
 import app, { faceBookprovider, googleProvider } from '../../services/configuration';
 import { insertUser } from '../../database/insert';
 import type { typUser } from '../../content/types';
@@ -60,7 +60,7 @@ export const signupUser = createAsyncThunk(
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 email: formData.email,
-                phoneNumber: formData.phone,
+                phoneNumber: [formData.phone],
                 password: formData.password,
                 role: formData.role,
             };
@@ -98,7 +98,7 @@ export const loginUser = createAsyncThunk(
                 email: formData.email,
                 firstName: '',
                 lastName: '',
-                phoneNumber: '',
+                phoneNumber: [],
                 password: '',
                 role: enmRole.user,
             } as typUser;
@@ -133,7 +133,7 @@ export const loginUserWithGoogle = createAsyncThunk(
                 email: user.email || '',
                 firstName: '',
                 lastName: '',
-                phoneNumber: '',
+                phoneNumber: [],
                 password: '',
                 role: enmRole.user,
             };
@@ -166,7 +166,7 @@ export const loginUserWithFacebook = createAsyncThunk(
                 email: user.email || '',
                 firstName: '',
                 lastName: '',
-                phoneNumber: '',
+                phoneNumber: [],
                 password: '',
                 role: enmRole.user,
             };

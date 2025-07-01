@@ -2,12 +2,12 @@ import { Box, IconButton, Stack, styled, Typography } from '@mui/material'
 import MuiAppBar, { type AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
-import { drawerWidth } from './DashboardLayout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LanguageIcon from '@mui/icons-material/Language';
-import { useThemeMode } from '../../provider/ThemeProvider';
+import { useThemeMode } from '../../../provider/ThemeProvider';
+import { drawerWidth } from '../DashboardLayout';
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;

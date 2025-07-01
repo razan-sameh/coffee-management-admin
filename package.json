@@ -17,6 +17,7 @@
     "@mui/x-data-grid": "^8.6.0",
     "@reduxjs/toolkit": "^2.8.2",
     "firebase": "^11.9.1",
+    "firebase-admin": "^13.4.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.58.1",

@@ -1,7 +1,7 @@
 import type { enmRole, enmSize } from "./enums";
 
 export type typCategory = {
-    ID: number,
+    ID: number | string,
     title: string
 };
 export type typProduct = {
@@ -46,8 +46,8 @@ export type typUser = {
     firstName: string,
     lastName: string,
     email:string,
-    phoneNumber: string
-    address?: string,
+    phoneNumber: string[]
+    address?: string[],
     password:string,
     role: enmRole
 }

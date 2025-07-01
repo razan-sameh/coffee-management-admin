@@ -6,7 +6,7 @@ import {
 } from "@mui/x-data-grid";
 import { Edit as EditIcon, Delete as DeleteIcon, Save as SaveIcon, Close as CancelIcon } from "@mui/icons-material";
 
-export const getUserActions = (
+export const getActions = (
     id: GridRowId,
     rowModesModel: GridRowModesModel,
     {

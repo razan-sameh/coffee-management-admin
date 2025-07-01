@@ -1,10 +1,10 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import TopBar from '../../components/dashboard/TopBar';
-import SideBar from '../../components/dashboard/SideBar';
-import DrawerHeader from '../../components/dashboard/DrawerHeaderStyle';
+import DrawerHeader from './components/DrawerHeaderStyle';
 import { Outlet } from 'react-router';
+import SideBar from './components/SideBar';
+import TopBar from './components/TopBar';
 export const drawerWidth = 240;
 export default function DashboardLayout() {
     const [open, setOpen] = React.useState(false);

@@ -96,6 +96,26 @@ export const lightTheme = createTheme({
                 },
             },
         },
-
+        MuiCssBaseline: {
+            styleOverrides: {
+                body: {
+                    scrollbarWidth: 'thin', // Firefox
+                    scrollbarColor: `${lightBaseColors.primary} ${lightBaseColors.background}`, // Firefox
+                },
+                '*::-webkit-scrollbar': {
+                    width: '8px',
+                },
+                '*::-webkit-scrollbar-track': {
+                    backgroundColor: lightBaseColors.background,
+                },
+                '*::-webkit-scrollbar-thumb': {
+                    backgroundColor: lightBaseColors.primary,
+                    borderRadius: '8px',
+                },
+                '*::-webkit-scrollbar-thumb:hover': {
+                    backgroundColor: lightBaseColors.secondary,
+                },
+            },
+        },
     }
 });

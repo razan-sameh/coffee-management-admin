@@ -9,10 +9,11 @@ import AuthProvider from './provider/AuthProvider'
 import ProtectedRoute from './components/ProtectedRoute'
 import { store } from './redux/store'
 import ToastProvider from './provider/ToastProvider'
-import User from './pages/user/User'
+import UserList from './pages/userList/UserList'
 import DashboardLayout from './components/dashboard/DashboardLayout'
 import Home from './pages/home/Home'
 import ThemeProvider from './provider/ThemeProvider'
+import CategoryList from './pages/categoryList/CategoryList'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -27,7 +28,8 @@ createRoot(document.getElementById('root')!).render(
               <Route element={<ProtectedRoute redirectTo="/login" />}>
                 <Route path="/" element={<DashboardLayout />} >
                   <Route index element={<Home />} />
-                  <Route path="user" element={<User />} />
+                  <Route path="user" element={<UserList />} />
+                  <Route path="category" element={<CategoryList />} />
                 </Route>
               </Route>
 

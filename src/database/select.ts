@@ -1,5 +1,5 @@
 import { off, onValue, ref } from "firebase/database";
-import type { typUser } from "../content/types";
+import type { typCategory, typUser } from "../content/types";
 import { database } from "../services/configuration";
 
 export const getUserInfo = (
@@ -14,6 +14,7 @@ export const getUserInfo = (
     // Returns unsubscribe function to detach listener
     return () => off(userRef, 'value', listener);
 };
+
 export const getAllUsers = (
     callback: (users: Record<string, typUser>) => void
 ): () => void => {
@@ -21,6 +22,19 @@ export const getAllUsers = (
     const listener = onValue(usersRef, (snapshot) => {
         const data = snapshot.val();
         if (data) callback(data as Record<string, typUser>);
+    });
+
+    // Returns unsubscribe function
+    return () => off(usersRef, "value", listener);
+};
+
+export const getAllCategories = (
+    callback: (users: Record<string, typCategory>) => void
+): () => void => {
+    const usersRef = ref(database, "/category");
+    const listener = onValue(usersRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) callback(data as Record<string, typCategory>);
     });
 
     // Returns unsubscribe function

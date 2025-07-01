@@ -49,5 +49,26 @@ export const darkTheme = createTheme({
                 },
             },
         },
+        MuiCssBaseline: {
+            styleOverrides: {
+                body: {
+                    scrollbarWidth: 'thin', // Firefox
+                    scrollbarColor: `${darkBaseColors.primary} ${darkBaseColors.background}`, // Firefox
+                },
+                '*::-webkit-scrollbar': {
+                    width: '8px',
+                },
+                '*::-webkit-scrollbar-track': {
+                    backgroundColor: darkBaseColors.background,
+                },
+                '*::-webkit-scrollbar-thumb': {
+                    backgroundColor: darkBaseColors.primary,
+                    borderRadius: '8px',
+                },
+                '*::-webkit-scrollbar-thumb:hover': {
+                    backgroundColor: darkBaseColors.secondary,
+                },
+            },
+        },
     }
 });

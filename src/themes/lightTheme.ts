@@ -62,6 +62,18 @@ export const lightTheme = createTheme({
         fontFamily: '"Inter", sans-serif',
     },
     components: {
+        MuiButton: {
+            styleOverrides: {
+                outlined: {
+                    color: lightBaseColors.secondary,
+                    borderColor: lightBaseColors.secondary,
+                    '&:hover': {
+                        borderColor: lightBaseColors.secondary,
+                        backgroundColor: 'rgba(215, 131, 37, 0.08)',
+                    },
+                },
+            },
+        },
         MuiDataGrid: {
             styleOverrides: {
                 columnHeaderTitle: {

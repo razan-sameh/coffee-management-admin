@@ -12,13 +12,15 @@ import {
     useGridApiRef,
 } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
-import ConfirmDialog from "../ConfirmDialog";
 import { setToast } from "../../redux/slices/toastSlice";
 import { useDispatch } from "react-redux";
 import { enmToastSeverity } from "../../content/enums";
 import CustomColumnMenu from "./components/CustomColumnMenu";
 import CustomToolbar from "./components/CustomToolbar";
 import { createInitialState, tableReducer } from "../../reducers/tableReducer";
+import { Outlet } from "react-router";
+import { v4 } from "uuid";
+import { useConfirmDialog } from "../../provider/ConfirmDialogProvider";
 
 
 export type SmartDataGridProps<T extends { id: string | number }> = {
@@ -29,10 +31,11 @@ export type SmartDataGridProps<T extends { id: string | number }> = {
             onSave: (id: GridRowId) => () => void;
             onDelete: (id: GridRowId) => () => void;
             onCancel: (id: GridRowId) => () => void;
+            onView: (id: GridRowId) => () => void;
         }
     ) => GridColDef[];
     getData: (callback: (data: Record<string, any>) => void) => () => void;
-    updateData: (id: string | number, payload: Partial<T>) => Promise<void>;
+    updateData?: (id: string | number, payload: Partial<T>) => Promise<void>;
     deleteData: (id: string | number) => Promise<void>;
     mapRow: (id: string, item: any, index: number) => T;
     imageBackground?: string;
@@ -40,7 +43,10 @@ export type SmartDataGridProps<T extends { id: string | number }> = {
         toolbar?: Record<string, any>;
         columnMenu?: Record<string, any>;
     };
-    createRow?: (newId: number) => T;
+    createRow?: (newId: string) => T;
+    onEdit?: (id: GridRowId) => void;
+    onView?: (id: GridRowId) => void;
+    onAdd?: () => void;
 };
 
 export default function SmartDataGrid<T extends { id: number | string }>({
@@ -51,12 +57,15 @@ export default function SmartDataGrid<T extends { id: number | string }>({
     mapRow,
     imageBackground,
     slotProps,
-    createRow
+    createRow,
+    onEdit,
+    onAdd,
+    onView
 }: SmartDataGridProps<T>) {
     const dispatch = useDispatch();
     const [state, dispatchReducer] = useReducer(tableReducer<T>, createInitialState<T>());
     const apiRef = useGridApiRef();
-
+    const { confirm } = useConfirmDialog();
     useEffect(() => {
         const unsubscribe = getData((data) => {
             const formatted = Object.entries(data).map(([uid, item], i) => mapRow(uid, item, i));
@@ -72,30 +81,27 @@ export default function SmartDataGrid<T extends { id: number | string }>({
     };
 
     const handleAddClick = () => {
-        if (!createRow) return;
+        if (createRow) {
 
-        const maxId = state.rows.reduce((max, row) => {
-            const idNum = typeof row.id === "number" ? row.id : parseInt(row.id as string, 10);
-            return !isNaN(idNum) && idNum > max ? idNum : max;
-        }, 0);
+            const newId = v4();
+            const newRow = { ...createRow(newId), id: newId, isNew: true };
 
-        const newId = maxId + 1;
-        const newRow = { ...createRow(newId), id: newId, isNew: true } as T & { isNew: boolean };
+            dispatchReducer({ type: "SET_ROWS", payload: [...state.rows, newRow] });
+            dispatchReducer({ type: "EDIT_ROW", id: newId });
 
-        dispatchReducer({ type: "SET_ROWS", payload: [...state.rows, newRow] });
-        dispatchReducer({ type: "EDIT_ROW", id: newId });
-
-        // Scroll to the new row using apiRef
-        setTimeout(() => {
-            if (apiRef.current) {
-                apiRef.current.scrollToIndexes({ rowIndex: state.rows.length });
-            }
-        }, 100);
+            // Scroll to the new row using apiRef
+            setTimeout(() => {
+                if (apiRef.current) {
+                    apiRef.current.scrollToIndexes({ rowIndex: state.rows.length });
+                }
+            }, 100);
+        }
+        else if (onAdd) onAdd()
+        else return
     };
 
 
 
-    const handleEditClick = (id: GridRowId) => () => dispatchReducer({ type: "EDIT_ROW", id });
     const handleSaveClick = (id: GridRowId) => () => dispatchReducer({ type: "SAVE_ROW", id });
     const handleCancelClick = (id: GridRowId) => () => {
         const row = state.rows.find((r) => r.id === id);
@@ -109,39 +115,60 @@ export default function SmartDataGrid<T extends { id: number | string }>({
             dispatchReducer({ type: "CANCEL_ROW", id });
         }
     };
-    const handleDeleteClick = (id: GridRowId) => () => {
+    const handleDeleteClick = (id: GridRowId) => async () => {
         const row = state.rows.find((r) => r.id === id);
         if (!row) return;
-        dispatchReducer({ type: "SET_CONFIRM", payload: { open: true, user: row } });
-    };
 
-    const confirmDelete = async () => {
-        if (!state.userToDelete) return;
+        const confirmed = await confirm({
+            title: "Confirm Delete",
+            content: `Are you sure you want to delete ${row.title || row.name}?`
+        });
+
+        if (!confirmed) return;
+
         try {
-            await deleteData(state.userToDelete.id);
-            dispatchReducer({ type: "DELETE_ROW", id: state.userToDelete.id });
+            await deleteData(id);
+            dispatchReducer({ type: "DELETE_ROW", id });
             dispatch(setToast({ message: "Deleted Successfully", severity: enmToastSeverity.success }));
         } catch (err: any) {
             dispatch(setToast({ message: `Delete failed: ${err.message}`, severity: enmToastSeverity.error }));
-        } finally {
-            dispatchReducer({ type: "SET_CONFIRM", payload: { open: false, user: null } });
         }
     };
+    const handleEditClick = (id: GridRowId) => () => {
+        if (onEdit) {
+            onEdit(id);
+        } else {
+            dispatchReducer({ type: "EDIT_ROW", id });
+        }
+    };
+    const handleDetailsClick = (id: GridRowId) => () => {
+        if (!onView) return
+        onView(id)
+    };
+
+
+
 
     const processRowUpdate = async (newRow: GridRowModel) => {
         const updatedRow = { ...newRow };
-        delete (updatedRow as any).isNew; // ✅ remove the flag
+        delete (updatedRow as any).isNew;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, no, ...fieldsToUpdate } = updatedRow;
 
         dispatchReducer({ type: "UPDATE_ROW", payload: updatedRow as Partial<T> & { id: string | number } });
-        try {
-            const { id, ...fieldsToUpdate } = updatedRow;
-            await updateData(id, fieldsToUpdate as Partial<T>);
-            dispatch(setToast({ message: "Updated Successfully", severity: enmToastSeverity.success }));
-        } catch (error: any) {
-            throw new Error(`Update Failed: ${error.message}`);
+
+        if (updateData) {
+            try {
+                await updateData(id, fieldsToUpdate as Partial<T>);
+                dispatch(setToast({ message: "Updated Successfully", severity: enmToastSeverity.success }));
+            } catch (error: any) {
+                throw new Error(`Update Failed: ${error.message}`);
+            }
         }
         return updatedRow as T;
     };
+
 
 
     const handleRowModesModelChange = (newModel: GridRowModesModel) => {
@@ -153,6 +180,7 @@ export default function SmartDataGrid<T extends { id: number | string }>({
         onSave: handleSaveClick,
         onCancel: handleCancelClick,
         onDelete: handleDeleteClick,
+        onView: handleDetailsClick,
     });
 
     return (
@@ -178,9 +206,6 @@ export default function SmartDataGrid<T extends { id: number | string }>({
                 }}
             >
                 <DataGrid
-                    // getRowClassName={(params) =>
-                    //     (params.row as any).isNew ? 'new-row' : ''
-                    // }
                     apiRef={apiRef}
                     sx={{
                         borderRadius: 3,
@@ -203,7 +228,7 @@ export default function SmartDataGrid<T extends { id: number | string }>({
                     slotProps={{
                         toolbar: {
                             ...(slotProps?.toolbar as any),
-                            onAddClick: createRow ? handleAddClick : undefined,
+                            onAddClick: handleAddClick,
                         },
                         columnMenu: slotProps?.columnMenu,
                     }}
@@ -217,17 +242,11 @@ export default function SmartDataGrid<T extends { id: number | string }>({
                     onProcessRowUpdateError={(error) =>
                         dispatch(setToast({ message: error.message, severity: enmToastSeverity.error }))
                     }
-                />
+                    onCellDoubleClick={(_params, event) => {
+                        event.stopPropagation();
+                    }} />
             </Box>
-
-            <ConfirmDialog
-                open={state.confirmOpen}
-                content={`Are you sure you want to delete ${state.userToDelete?.title || state.userToDelete?.name}?`}
-                onClose={() =>
-                    dispatchReducer({ type: "SET_CONFIRM", payload: { open: false, user: null } })
-                }
-                onConfirm={confirmDelete}
-            />
+            <Outlet />
         </Box>
 
     );

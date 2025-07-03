@@ -1,6 +1,6 @@
-import { ref, update } from "firebase/database";
+import { ref, set, update } from "firebase/database";
 import { database } from "../services/configuration";
-import type { typUser } from "../content/types";
+import type { typProduct, typUser } from "../content/types";
 
 export const updateUserInfo = (
     Uid: string | number,
@@ -16,3 +16,10 @@ export const updateCategoryTitle = (
     const categoryRef = ref(database, `/category/${id}`);
     return update(categoryRef, payload);
 };
+
+// in select.ts or another database file
+export const updateProduct = async (product: typProduct): Promise<void> => {
+    const productRef = ref(database, `product/${product.ID}`);
+    await set(productRef, product);
+};
+

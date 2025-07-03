@@ -3,7 +3,7 @@ import SmartDataGrid from '../../components/smartDataGrid/SmartDataGrid'
 import { deleteCategoryById } from '../../database/delete'
 import { getAllCategories } from '../../database/select'
 import { updateCategoryTitle } from '../../database/update'
-import { getColumns } from './components/Columns'
+import { getColumns } from './components/columns'
 
 export default function CategoryList() {
     return (
@@ -12,8 +12,9 @@ export default function CategoryList() {
             getData={getAllCategories}
             updateData={updateCategoryTitle}
             deleteData={deleteCategoryById}
-            mapRow={(id, cat) => ({
+            mapRow={(id, cat, index) => ({
                 id: id,
+                no: index + 1, // 👈 only for display, not saved
                 title: cat.title,
             })}
             imageBackground={imagePaths.beans}
@@ -27,8 +28,8 @@ export default function CategoryList() {
             }}
             createRow={(newId) => ({
                 id: newId,
-                ID:newId,
-                title:''
+                title: '',
+                no: -1,
             })}
         />
     );

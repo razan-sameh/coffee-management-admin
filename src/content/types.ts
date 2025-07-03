@@ -5,7 +5,7 @@ export type typCategory = {
     title: string
 };
 export type typProduct = {
-    ID: number,
+    ID: string,
     title: string,
     price: number,
     category: number,

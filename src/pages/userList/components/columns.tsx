@@ -9,6 +9,15 @@ import SelectableArrayCell from "../../../components/smartDataGrid/components/Se
 export const getColumns = (rowModesModel: GridRowModesModel, actions: { onEdit: (id: GridRowId) => () => void; onSave: (id: GridRowId) => () => void; onDelete: (id: GridRowId) => () => void; onCancel: (id: GridRowId) => () => void; }) =>
   [
     {
+      field: "no",
+      headerName: ".NO",
+      flex: 1,
+      editable: true,
+      sortable: true,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
       field: "name", headerName: "Full Name", flex: 1, editable: true, sortable: true, align: "center",
       headerAlign: "center",
     },

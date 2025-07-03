@@ -1,5 +1,5 @@
-import { off, onValue, ref } from "firebase/database";
-import type { typCategory, typUser } from "../content/types";
+import { get, off, onValue, ref } from "firebase/database";
+import type { typCategory, typProduct, typUser } from "../content/types";
 import { database } from "../services/configuration";
 
 export const getUserInfo = (
@@ -39,4 +39,41 @@ export const getAllCategories = (
 
     // Returns unsubscribe function
     return () => off(usersRef, "value", listener);
+};
+
+export const getCategoryById = async (id: number | string): Promise<typCategory | null> => {
+    const categoryRef = ref(database, `/category`);
+    const snapshot = await get(categoryRef);
+
+    if (snapshot.exists()) {
+        const data = snapshot.val() as Record<string, typCategory>;
+        const found = Object.values(data).find((cat) => +cat.ID === +id);
+        return found ?? null;
+    }
+    return null;
+};
+
+export const getAllProducts = (
+    callback: (users: Record<string, typProduct>) => void
+): () => void => {
+    const usersRef = ref(database, "/product");
+    const listener = onValue(usersRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) callback(data as Record<string, typProduct>);
+    });
+
+    // Returns unsubscribe function
+    return () => off(usersRef, "value", listener);
+};
+
+
+export const getProductById = async (id: string): Promise<typProduct | null> => {
+    const productRef = ref(database, `/product/${id}`); // ✅ Access directly by key
+    const snapshot = await get(productRef);
+
+    if (snapshot.exists()) {
+        return snapshot.val() as typProduct;
+    }
+
+    return null;
 };

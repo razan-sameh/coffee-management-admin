@@ -30,8 +30,11 @@ export function tableReducer<T extends { id: string | number }>(
     action: TableAction<T>
 ): TableState<T> {
     switch (action.type) {
-        case "SET_ROWS":
-            return { ...state, rows: action.payload };
+ case "SET_ROWS":
+    return {
+        ...state,
+        rows: action.payload.map((row, index) => ({ ...row, no: index + 1 })),
+    };
         case "EDIT_ROW":
             return {
                 ...state,
@@ -74,6 +77,7 @@ export function tableReducer<T extends { id: string | number }>(
                     r.id === action.payload.id ? { ...r, ...action.payload } : r
                 ),
             };
+            
         case "SET_ROW_MODES_MODEL":
             return { ...state, rowModesModel: action.payload };
         default:

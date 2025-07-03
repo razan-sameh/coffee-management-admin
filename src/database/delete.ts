@@ -8,7 +8,6 @@ export const deleteUserByUid = async (id: string | number): Promise<void> => {
         await deleteUserRequest(uid); // Send request to auth service or backend
         const userRef = ref(database, `user/${uid}`);
         await remove(userRef);
-        console.log(`Deleted user with UID: ${uid}`);
     } catch (error) {
         console.error("Failed to delete user:", error);
         throw error;
@@ -20,9 +19,19 @@ export const deleteCategoryById = async (id: string | number): Promise<void> => 
         const idStr = String(id); // Convert to string if it's a number
         const categoryRef = ref(database, `category/${idStr}`);
         await remove(categoryRef);
-        console.log(`Deleted category with ID: ${idStr}`);
     } catch (error) {
         console.error("Failed to delete category:", error);
+        throw error;
+    }
+};
+
+export const deleteProductById = async (id: string | number): Promise<void> => {
+    try {
+        const idStr = String(id); // Ensure the ID is a string
+        const productRef = ref(database, `product/${idStr}`);
+        await remove(productRef);
+    } catch (error) {
+        console.error("Failed to delete product:", error);
         throw error;
     }
 };

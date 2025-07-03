@@ -2,13 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { FacebookAuthProvider, GoogleAuthProvider } from "firebase/auth";
 import { getDatabase } from "firebase/database";
-// import admin from "firebase-admin";
-// import serviceAccount from "./firebase-admin-key.json";
-
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-//   databaseURL: "https://coffeeapp-45d44-default-rtdb.firebaseio.com",
-// });
+import { getStorage } from 'firebase/storage';
 // Your Firebase config here
 const firebaseConfig = {
     apiKey: "AIzaSyDkzK1uQqZJj2agmWf-Q9jCkGlwMGzAWf4",
@@ -26,6 +20,7 @@ const cong = initializeApp(firebaseConfig);
 export const database = getDatabase(cong);
 export const googleProvider = new GoogleAuthProvider();
 export const faceBookprovider = new FacebookAuthProvider();
+export const storage = getStorage();
 
 export default cong;
 // Now you can use Firebase services in your React app!

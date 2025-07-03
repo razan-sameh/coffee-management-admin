@@ -14,6 +14,11 @@ import DashboardLayout from './components/dashboard/DashboardLayout'
 import Home from './pages/home/Home'
 import ThemeProvider from './provider/ThemeProvider'
 import CategoryList from './pages/categoryList/CategoryList'
+import ProductList from './pages/productList/ProductList'
+import ProductDetails from './pages/productDetails/ProductDetails'
+import EditProduct from './pages/editProduct/EditProduct'
+import AddProduct from './pages/editProduct/EditProduct'
+import { ConfirmDialogProvider } from './provider/ConfirmDialogProvider'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -21,21 +26,28 @@ createRoot(document.getElementById('root')!).render(
       <ThemeProvider>
         <BrowserRouter>
           <AuthProvider>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-
-              <Route element={<ProtectedRoute redirectTo="/login" />}>
-                <Route path="/" element={<DashboardLayout />} >
-                  <Route index element={<Home />} />
-                  <Route path="user" element={<UserList />} />
-                  <Route path="category" element={<CategoryList />} />
+            <ConfirmDialogProvider>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route element={<ProtectedRoute redirectTo="/login" />}>
+                  <Route path="/" element={<DashboardLayout />} >
+                    <Route index element={<Home />} />
+                    <Route path="user" element={<UserList />} />
+                    <Route path="category" element={<CategoryList />} />
+                    <Route path="product">
+                      <Route index element={<ProductList />} />
+                      <Route path=":id" element={<ProductDetails />} />
+                      <Route path="edit/:id" element={<EditProduct isEditMode={true} />} />
+                      <Route path="add" element={<AddProduct isEditMode={false} />} />
+                      {/* <Route path="category" element={<CategoryList />} /> */}
+                    </Route>
+                  </Route>
                 </Route>
-              </Route>
-
-              {/* Optionally handle 404 */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+                {/* Optionally handle 404 */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </ConfirmDialogProvider>
             <ToastProvider />
           </AuthProvider>
         </BrowserRouter>

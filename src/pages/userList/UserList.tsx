@@ -21,8 +21,9 @@ export default function UserList() {
       getData={getAllUsers}
       updateData={updateUserInfo} // id === Uid
       deleteData={deleteUserByUid} // id === Uid
-      mapRow={(uid, user) => ({
+      mapRow={(uid, user, index) => ({
         id: uid,
+        no: index + 1,
         Uid: uid,
         name: `${user.firstName} ${user.lastName}`,
         phone: user.phoneNumber || [],

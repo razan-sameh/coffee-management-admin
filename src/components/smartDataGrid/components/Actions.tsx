@@ -4,7 +4,13 @@ import {
     type GridRowId,
     type GridRowModesModel,
 } from "@mui/x-data-grid";
-import { Edit as EditIcon, Delete as DeleteIcon, Save as SaveIcon, Close as CancelIcon } from "@mui/icons-material";
+import {
+    Edit as EditIcon,
+    Delete as DeleteIcon,
+    Save as SaveIcon,
+    Close as CancelIcon,
+    Visibility as VisibilityIcon,
+} from "@mui/icons-material";
 
 export const getActions = (
     id: GridRowId,
@@ -14,21 +20,38 @@ export const getActions = (
         onSave,
         onDelete,
         onCancel,
+        onView,
+        showDetails = false,
     }: {
         onEdit: (id: GridRowId) => () => void;
         onSave: (id: GridRowId) => () => void;
         onDelete: (id: GridRowId) => () => void;
         onCancel: (id: GridRowId) => () => void;
+        onView?: (id: GridRowId) => () => void;
+        showDetails?: boolean;
     }
 ) => {
     const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-    return isInEditMode
-        ? [
-            <GridActionsCellItem icon={<SaveIcon />} label="Save" onClick={onSave(id)} />,
-            <GridActionsCellItem icon={<CancelIcon />} label="Cancel" onClick={onCancel(id)} />,
-        ]
-        : [
-            <GridActionsCellItem icon={<EditIcon />} label="Edit" onClick={onEdit(id)} />,
-            <GridActionsCellItem icon={<DeleteIcon />} label="Delete" onClick={onDelete(id)} />,
+
+    if (isInEditMode) {
+        return [
+            <GridActionsCellItem key="save" icon={<SaveIcon />} label="Save" onClick={onSave(id)} />,
+            <GridActionsCellItem key="cancel" icon={<CancelIcon />} label="Cancel" onClick={onCancel(id)} />,
         ];
+    }
+
+    const actions = [];
+
+    if (showDetails && onView) {
+        actions.push(
+            <GridActionsCellItem key="details" icon={<VisibilityIcon />} label="Details" onClick={onView(id)} />
+        );
+    }
+
+    actions.push(
+        <GridActionsCellItem key="edit" icon={<EditIcon />} label="Edit" onClick={onEdit(id)} />,
+        <GridActionsCellItem key="delete" icon={<DeleteIcon />} label="Delete" onClick={onDelete(id)} />
+    );
+
+    return actions;
 };

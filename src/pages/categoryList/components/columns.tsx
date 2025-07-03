@@ -5,7 +5,12 @@ import { getActions } from "../../../components/smartDataGrid/components/Actions
 export const getColumns = (rowModesModel: GridRowModesModel, actions: { onEdit: (id: GridRowId) => () => void; onSave: (id: GridRowId) => () => void; onDelete: (id: GridRowId) => () => void; onCancel: (id: GridRowId) => () => void; }) =>
     [
         {
-            field: "id", headerName: "ID", flex: 1, editable: true, sortable: true, align: "center",
+            field: "no",
+            headerName: ".NO",
+            flex: 1,
+            editable: true,
+            sortable: true,
+            align: "center",
             headerAlign: "center",
         },
         {

@@ -1,6 +1,8 @@
-import { push, ref, set } from 'firebase/database';
+import { get, push, ref, set } from 'firebase/database';
 import type { typProduct, typUser } from '../content/types';
 import { database } from '../services/configuration'; // adjust the path
+import { getProductById } from './select';
+import type { enmSize } from '../content/enums';
 export const insertUser = (user: typUser) => {
     set(ref(database, `/user/${user.Uid}`), {
         Uid: user.Uid ?? '',
@@ -25,3 +27,35 @@ export async function insertProduct(product: typProduct) {
 
     await set(newRef, newProduct);
 }
+
+export const addItemInCart = async (
+    Uid: string,
+    productID: string,
+    size: enmSize,
+    count: number = 1
+): Promise<void> => {
+    const userCartRef = ref(database, `cart/${Uid}`);
+    const itemKey = `${Uid}_${productID}_${size}`;
+
+    const snapshot = await get(userCartRef);
+    const cartItems = snapshot.val() || {};
+
+    const product = await getProductById(productID);
+    if (!product) throw new Error('Product not found');
+
+    if (cartItems[itemKey]) {
+        cartItems[itemKey].count += count;
+        cartItems[itemKey].price = product.price * cartItems[itemKey].count;
+    } else {
+        cartItems[itemKey] = {
+            Uid,
+            productID,
+            size,
+            count,
+            price: product.price * count,
+        };
+    }
+
+    await set(userCartRef, cartItems);
+    console.log('✅ Cart updated successfully');
+};

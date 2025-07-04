@@ -1,5 +1,5 @@
 import { get, off, onValue, ref } from "firebase/database";
-import type { typCategory, typProduct, typUser } from "../content/types";
+import type { typCart, typCategory, typProduct, typUser } from "../content/types";
 import { database } from "../services/configuration";
 
 export const getUserInfo = (
@@ -68,12 +68,23 @@ export const getAllProducts = (
 
 
 export const getProductById = async (id: string): Promise<typProduct | null> => {
-    const productRef = ref(database, `/product/${id}`); // ✅ Access directly by key
+    const productRef = ref(database, `/product/${id}`);
     const snapshot = await get(productRef);
+    return snapshot.exists() ? snapshot.val() as typProduct : null;
+};
 
-    if (snapshot.exists()) {
-        return snapshot.val() as typProduct;
-    }
 
-    return null;
+export const listenToCart = (
+    Uid: string,
+    callback: (items: typCart[]) => void
+): () => void => {
+    const cartRef = ref(database, `cart/${Uid}`);
+
+    const listener = onValue(cartRef, (snapshot) => {
+        const data = snapshot.val();
+        const items = data ? Object.values(data) as typCart[] : [];
+        callback(items);
+    });
+
+    return () => off(cartRef, 'value', listener);
 };

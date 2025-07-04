@@ -8,6 +8,8 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useThemeMode } from '../../../provider/ThemeProvider';
 import { drawerWidth } from '../DashboardLayout';
+import type { RootState } from '../../../redux/store';
+import { useSelector } from 'react-redux';
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -16,6 +18,7 @@ export default function TopBar({ open, handleDrawerOpen }: {
     open: boolean;
     handleDrawerOpen: () => void
 }) {
+    const { user } = useSelector((state: RootState) => state.auth);
     const { toggleTheme, mode } = useThemeMode();
     const AppBar = styled(MuiAppBar, {
         shouldForwardProp: (prop) => prop !== 'open',
@@ -70,8 +73,8 @@ export default function TopBar({ open, handleDrawerOpen }: {
                 <Stack direction={'row'} alignItems={'center'} paddingX={'12px'}>
                     <AccountCircleIcon fontSize='large' />
                     <Stack direction="column" alignItems={'flex-start'} marginLeft={1}>
-                        <Typography variant='title'>Razan Sameh</Typography>
-                        <Typography>Manager</Typography>
+                        <Typography variant='title'>{user?.firstName} {' '} {user?.lastName}</Typography>
+                        <Typography>{user?.role}</Typography>
                     </Stack>
                 </Stack>
             </Toolbar>

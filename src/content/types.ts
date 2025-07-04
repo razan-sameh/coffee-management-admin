@@ -51,3 +51,8 @@ export type typUser = {
     password:string,
     role: enmRole
 }
+
+// export type typOrder = {
+
+// }
+

@@ -90,6 +90,13 @@ export const lightTheme = createTheme({
                 },
             },
         },
+        MuiSvgIcon: {
+            styleOverrides: {
+                root: {
+                    color: lightBaseColors.primaryText,
+                },
+            },
+        },
         MuiListItemIcon: {
             styleOverrides: {
                 root: {

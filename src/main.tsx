@@ -16,8 +16,8 @@ import ThemeProvider from './provider/ThemeProvider'
 import CategoryList from './pages/categoryList/CategoryList'
 import ProductList from './pages/productList/ProductList'
 import ProductDetails from './pages/productDetails/ProductDetails'
-import EditProduct from './pages/editProduct/EditProduct'
-import AddProduct from './pages/editProduct/EditProduct'
+import EditProduct from './pages/productEditor/ProductEditor'
+import AddProduct from './pages/productEditor/ProductEditor'
 import { ConfirmDialogProvider } from './provider/ConfirmDialogProvider'
 
 createRoot(document.getElementById('root')!).render(
@@ -40,7 +40,6 @@ createRoot(document.getElementById('root')!).render(
                       <Route path=":id" element={<ProductDetails />} />
                       <Route path="edit/:id" element={<EditProduct isEditMode={true} />} />
                       <Route path="add" element={<AddProduct isEditMode={false} />} />
-                      {/* <Route path="category" element={<CategoryList />} /> */}
                     </Route>
                   </Route>
                 </Route>

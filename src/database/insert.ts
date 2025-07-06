@@ -1,8 +1,10 @@
 import { get, push, ref, set } from 'firebase/database';
-import type { typProduct, typUser } from '../content/types';
+import type { typDeliveryInfo, typOrderItem, typProduct, typUser } from '../content/types';
 import { database } from '../services/configuration'; // adjust the path
 import { getProductById } from './select';
-import type { enmSize } from '../content/enums';
+import { enmAddToCartMode, type enmOrderType, type enmPaymentMethod, type enmSize } from '../content/enums';
+import { v4 as uuidv4 } from 'uuid';
+
 export const insertUser = (user: typUser) => {
     set(ref(database, `/user/${user.Uid}`), {
         Uid: user.Uid ?? '',
@@ -28,14 +30,15 @@ export async function insertProduct(product: typProduct) {
     await set(newRef, newProduct);
 }
 
-export const addItemInCart = async (
-    Uid: string,
+export const addItemToCart = async (
+    uid: string,
     productID: string,
     size: enmSize,
-    count: number = 1
+    count: number = 1,
+    mode: enmAddToCartMode = enmAddToCartMode.increment // new param
 ): Promise<void> => {
-    const userCartRef = ref(database, `cart/${Uid}`);
-    const itemKey = `${Uid}_${productID}_${size}`;
+    const userCartRef = ref(database, `cart/${uid}`);
+    const itemKey = `${uid}_${productID}_${size}`;
 
     const snapshot = await get(userCartRef);
     const cartItems = snapshot.val() || {};
@@ -44,11 +47,12 @@ export const addItemInCart = async (
     if (!product) throw new Error('Product not found');
 
     if (cartItems[itemKey]) {
-        cartItems[itemKey].count += count;
-        cartItems[itemKey].price = product.price * cartItems[itemKey].count;
+        const newCount = mode === enmAddToCartMode.increment ? cartItems[itemKey].count + count : count;
+        cartItems[itemKey].count = newCount;
+        cartItems[itemKey].price = product.price * newCount;
     } else {
         cartItems[itemKey] = {
-            Uid,
+            Uid: uid,
             productID,
             size,
             count,
@@ -57,5 +61,41 @@ export const addItemInCart = async (
     }
 
     await set(userCartRef, cartItems);
-    console.log('✅ Cart updated successfully');
+};
+
+type CreateOrderParams = {
+    userId: string;
+    cartItems: typOrderItem[];
+    total: number;
+    paymentMethod: enmPaymentMethod;
+    orderType: enmOrderType;
+    deliveryInfo: typDeliveryInfo | null;
+};
+
+export const createOrder = async ({
+    userId,
+    cartItems,
+    total,
+    paymentMethod,
+    orderType,
+    deliveryInfo,
+}: CreateOrderParams): Promise<string> => {
+    const orderId = uuidv4();
+    const orderData = {
+        id: orderId,
+        items: cartItems.map((item) => ({
+            productID: item.productID,
+            size: item.size,
+            count: item.count,
+            price: item.price,
+        })),
+        total,
+        paymentMethod,
+        orderType,
+        deliveryInfo,
+        userId,
+    };
+    const orderRef = ref(database, `order/${orderId}`);
+    await set(orderRef, orderData);
+    return orderId;
 };

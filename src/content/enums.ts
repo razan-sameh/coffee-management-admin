@@ -1,3 +1,11 @@
+export enum enmPaymentMethod {
+    cash = 'Cash',
+    CreditCard = 'Credit Card',
+}
+export enum enmOrderType {
+    dineIn = 'Dine In',
+    delivery = 'Delivery'
+}
 export enum enmSize {
     small = 'S',
     medium = 'M',
@@ -15,4 +23,8 @@ export enum enmToastSeverity {
     info = 'info',
     warning = 'warning',
     error = 'error'
+}
+export enum enmAddToCartMode {
+    set = 'Set',
+    increment = 'Increment',
 }

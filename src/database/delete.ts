@@ -35,3 +35,18 @@ export const deleteProductById = async (id: string | number): Promise<void> => {
         throw error;
     }
 };
+
+export const deleteCartItem = async (
+    uid: string,
+    productID: string,
+    size: string
+): Promise<void> => {
+    const itemKey = `${uid}_${productID}_${size}`;
+    const itemRef = ref(database, `cart/${uid}/${itemKey}`);
+    await remove(itemRef);
+};
+
+export const clearCart = async (Uid: string): Promise<void> => {
+    const cartRef = ref(database, `cart/${Uid}`);
+    await remove(cartRef);
+};

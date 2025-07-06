@@ -1,23 +1,16 @@
 import { useState } from 'react';
 import {
-    Box,
-    Grid,
-    Card,
-    CardContent,
-    CardMedia,
-    Typography,
-    Rating,
-    IconButton,
-    Pagination,
-    ToggleButton,
-    ToggleButtonGroup,
+    Box, Grid, Card, CardContent, CardMedia,
+    Typography, Rating, IconButton, Pagination,
+    ToggleButton, ToggleButtonGroup,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useSelector } from 'react-redux';
-import { addItemInCart } from '../../../database/insert';
+import { useSelector, useDispatch } from 'react-redux';
 import type { typProduct } from '../../../content/types';
-import { enmSize } from '../../../content/enums';
+import { enmAddToCartMode, enmSize, enmToastSeverity } from '../../../content/enums';
 import type { RootState } from '../../../redux/store';
+import { setToast } from '../../../redux/slices/toastSlice';
+import { addItemToCart } from '../../../database/insert';
 
 type Props = {
     products: typProduct[];
@@ -27,30 +20,38 @@ const ITEMS_PER_PAGE = 8;
 
 export default function ProductGrid({ products }: Props) {
     const [page, setPage] = useState(1);
+    const [selectedSizes, setSelectedSizes] = useState<Record<string, enmSize>>({});
     const pageCount = Math.ceil(products.length / ITEMS_PER_PAGE);
     const uid = useSelector((state: RootState) => state.auth.user?.Uid);
-
-    // Track size per product
-    const [selectedSizes, setSelectedSizes] = useState<Record<string, enmSize>>({});
+    const dispatch = useDispatch();
 
     const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
 
     const handleSizeChange = (productID: string, size: enmSize) => {
-        setSelectedSizes((prev) => ({ ...prev, [productID]: size }));
+        setSelectedSizes(prev => ({ ...prev, [productID]: size }));
     };
 
-    const handleAddToCart = (productID: string) => {
-        const size = selectedSizes[productID] || enmSize.medium;
+    const handleAddToCart = async (product: typProduct) => {
+        const size = selectedSizes[product.ID] || enmSize.medium;
+
         if (!uid) {
-            alert('User not logged in');
+            dispatch(setToast({
+                message: 'User not logged in',
+                severity: enmToastSeverity.warning,
+            }));
             return;
         }
 
-        addItemInCart(uid, productID, size, 1)
-            .then(() => alert('✅ Added to cart'))
-            .catch((err) => console.error('Error adding to cart:', err));
+        try {
+            await addItemToCart(uid, product.ID, size, 1, enmAddToCartMode.increment); // ✅ Firebase only
+        } catch (err) {
+            dispatch(setToast({
+                message: `Error adding to cart: ${err}`,
+                severity: enmToastSeverity.error,
+            }));
+        }
     };
 
     const paginatedProducts = products.slice(
@@ -61,8 +62,8 @@ export default function ProductGrid({ products }: Props) {
     return (
         <Box>
             <Grid container spacing={2}>
-                {paginatedProducts.map((product) => (
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }} key={product.ID}>
+                {paginatedProducts.map(product => (
+                    <Grid key={product.ID} size={{ xs: 12, sm: 6, md: 3 }}>
                         <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 1 }}>
                             <CardMedia
                                 component="img"
@@ -77,18 +78,13 @@ export default function ProductGrid({ products }: Props) {
                                 </Typography>
                                 <Rating value={product.rate} readOnly size="small" />
 
-                                {/* Size selector per product */}
                                 <ToggleButtonGroup
                                     exclusive
                                     value={selectedSizes[product.ID] || enmSize.medium}
                                     onChange={(_, val) => val && handleSizeChange(product.ID, val)}
-                                    sx={{
-                                        mt: 1,
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                    }}
+                                    sx={{ mt: 1, display: 'flex', justifyContent: 'center' }}
                                 >
-                                    {Object.values(enmSize).map((sz) => (
+                                    {Object.values(enmSize).map(sz => (
                                         <ToggleButton
                                             key={sz}
                                             value={sz}
@@ -111,7 +107,7 @@ export default function ProductGrid({ products }: Props) {
                                     <Typography fontWeight="bold">
                                         ${product.price.toFixed(2)}
                                     </Typography>
-                                    <IconButton onClick={() => handleAddToCart(product.ID)}>
+                                    <IconButton onClick={() => handleAddToCart(product)}>
                                         <AddIcon />
                                     </IconButton>
                                 </Box>
@@ -121,7 +117,6 @@ export default function ProductGrid({ products }: Props) {
                 ))}
             </Grid>
 
-            {/* Pagination */}
             <Box mt={4} display="flex" justifyContent="center">
                 <Pagination
                     count={pageCount}

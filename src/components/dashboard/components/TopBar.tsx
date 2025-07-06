@@ -1,6 +1,7 @@
-import { Box, IconButton, Stack, styled, Typography } from '@mui/material'
+import { Badge, Box, IconButton, Stack, styled, Typography } from '@mui/material'
 import MuiAppBar, { type AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MenuIcon from '@mui/icons-material/Menu';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Toolbar from '@mui/material/Toolbar';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
@@ -10,6 +11,7 @@ import { useThemeMode } from '../../../provider/ThemeProvider';
 import { drawerWidth } from '../DashboardLayout';
 import type { RootState } from '../../../redux/store';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -20,6 +22,11 @@ export default function TopBar({ open, handleDrawerOpen }: {
 }) {
     const { user } = useSelector((state: RootState) => state.auth);
     const { toggleTheme, mode } = useThemeMode();
+    const cartItems = useSelector((state: RootState) => state.cart.items); // adjust according to your slice
+    const cartCount = cartItems.reduce((sum, item) => sum + item.count, 0);
+    const navigate = useNavigate();
+    console.log({cartItems});
+    
     const AppBar = styled(MuiAppBar, {
         shouldForwardProp: (prop) => prop !== 'open',
     })<AppBarProps>(({ theme }) => ({
@@ -63,6 +70,12 @@ export default function TopBar({ open, handleDrawerOpen }: {
 
                 {/* Right side: Profile */}
                 <Box flexGrow={1} />
+                {/* Cart Icon */}
+                <IconButton size="large" onClick={() => navigate('/')}>
+                    <Badge badgeContent={cartCount} color="error">
+                        <ShoppingCartIcon fontSize="inherit" />
+                    </Badge>
+                </IconButton>
                 {/* Theme toggle button */}
                 <IconButton size="large" onClick={toggleTheme}>
                     {mode === 'dark' ? <LightModeIcon fontSize="inherit" /> : <DarkModeIcon fontSize="inherit" />}

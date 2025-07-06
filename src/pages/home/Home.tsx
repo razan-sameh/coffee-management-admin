@@ -3,7 +3,7 @@ import HeroBanner from "./component/HeroBanner";
 import ProductGrid from "./component/ProductGrid";
 import TopBar from "./component/TopBar";
 import { useEffect, useState } from 'react';
-import CheckoutStepper from "./component/CartSummary";
+import CheckoutStepper from "./component/cartSummary/CartSummary";
 import PromoCard from "./component/PromoCard";
 import promo from '../../assets/images/Rectangle 11.png'
 import type { typCategory, typProduct } from "../../content/types";

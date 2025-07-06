@@ -1,4 +1,4 @@
-import type { enmRole, enmSize } from "./enums";
+import type { enmOrderType, enmPaymentMethod, enmRole, enmSize } from "./enums";
 
 export type typCategory = {
     ID: number | string,
@@ -15,10 +15,10 @@ export type typProduct = {
 };
 export type typCart = {
     Uid: string,
-    productID: number,
+    productID: string,
     size: enmSize,
     count: number,
-    price:number
+    price: number
 };
 export type typRange = {
     intMin: number,
@@ -45,14 +45,32 @@ export type typUser = {
     Uid: string,
     firstName: string,
     lastName: string,
-    email:string,
+    email: string,
     phoneNumber: string[]
     address?: string[],
-    password:string,
+    password: string,
     role: enmRole
 }
 
-// export type typOrder = {
+export type typDeliveryInfo = {
+    name: string;
+    address: string;
+    phone: string;
+};
+export type typOrderItem = {
+    productID: string,
+    size: enmSize,
+    count: number,
+    price: number
+};
 
-// }
+export type typOrder = {
+    id: string,
+    items: typOrderItem[],
+    total: number,
+    paymentMethod: enmPaymentMethod,
+    orderType: enmOrderType,
+    deliveryInfo: typDeliveryInfo | null,
+    userId: string
+}
 

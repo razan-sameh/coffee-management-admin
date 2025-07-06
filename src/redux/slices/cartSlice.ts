@@ -1,7 +1,7 @@
 // redux/slices/cartSlice.ts
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { typCart } from '../../content/types';
-import type { enmSize } from '../../content/enums';
+import { type enmSize } from '../../content/enums';
 
 interface CartState {
     items: typCart[];
@@ -15,22 +15,13 @@ const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
-        addToCart: (state, action: PayloadAction<typCart>) => {
-            const existing = state.items.find(
-                item =>
-                    item.productID === action.payload.productID &&
-                    item.size === action.payload.size
-            );
-
-            if (existing) {
-                existing.count += action.payload.count;
-                existing.price += action.payload.price;
-            } else {
-                state.items.push(action.payload);
-            }
+        // 🔄 Called from `listenToCart` when Firebase updates
+        setCart: (state, action: PayloadAction<typCart[]>) => {
+            state.items = action.payload;
         },
 
-        removeFromCart: (state, action: PayloadAction<{ productID: number; size: enmSize }>) => {
+        // 🧪 Optional: may use later
+        removeFromCart: (state, action: PayloadAction<{ productID: string; size: enmSize }>) => {
             state.items = state.items.filter(
                 item =>
                     !(item.productID === action.payload.productID && item.size === action.payload.size)
@@ -43,5 +34,5 @@ const cartSlice = createSlice({
     },
 });
 
-export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
+export const { setCart, removeFromCart, clearCart } = cartSlice.actions;
 export default cartSlice.reducer;

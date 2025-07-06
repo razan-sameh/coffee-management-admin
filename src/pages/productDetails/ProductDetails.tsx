@@ -17,7 +17,6 @@ export default function ProductDetails() {
     const [mainImage, setMainImage] = useState('');
     const [rating, setRating] = useState<number | null>(4);
     const [size, setSize] = useState<enmSize>(enmSize.medium);
-    const [quantity, setQuantity] = useState(1);
 
     useEffect(() => {
         if (id) {
@@ -67,9 +66,8 @@ export default function ProductDetails() {
                     <ProductSizeSelector size={size} onChange={setSize} />
 
                     <ProductQuantityControl
-                        quantity={quantity}
-                        onIncrement={() => setQuantity(q => q + 1)}
-                        onDecrement={() => setQuantity(q => Math.max(1, q - 1))}
+                        productID={product.ID.toString()}
+                        size={size}
                     />
                 </Box>
             </Box>

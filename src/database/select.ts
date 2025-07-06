@@ -1,6 +1,7 @@
 import { get, off, onValue, ref } from "firebase/database";
 import type { typCart, typCategory, typProduct, typUser } from "../content/types";
 import { database } from "../services/configuration";
+import type { enmSize } from "../content/enums";
 
 export const getUserInfo = (
     Uid: string,
@@ -75,16 +76,49 @@ export const getProductById = async (id: string): Promise<typProduct | null> => 
 
 
 export const listenToCart = (
-    Uid: string,
+    uid: string,
     callback: (items: typCart[]) => void
 ): () => void => {
-    const cartRef = ref(database, `cart/${Uid}`);
-
+    const cartRef = ref(database, `cart/${uid}`);
     const listener = onValue(cartRef, (snapshot) => {
         const data = snapshot.val();
-        const items = data ? Object.values(data) as typCart[] : [];
-        callback(items);
+        if (data) {
+            const items = Object.values(data) as typCart[];
+            callback(items);
+        } else {
+            console.log("No cart items found for user:", uid);
+            callback([]);
+        }
+    }, (error) => {
+        console.error("Error listening to cart:", error);
     });
 
     return () => off(cartRef, 'value', listener);
+};;
+
+export const getMultipleProducts = async (
+    ids: string[]
+): Promise<Record<string, typProduct>> => {
+    const products: Record<string, typProduct> = {};
+    await Promise.all(
+        ids.map(async (id) => {
+            const snap = await get(ref(database, `product/${id}`));
+            if (snap.exists()) {
+                products[id] = snap.val() as typProduct;
+            }
+        })
+    );
+    return products;
+};
+
+
+export const getCartItem = async (
+    uid: string,
+    productID: string,
+    size: enmSize
+): Promise<typCart | null> => {
+    const itemKey = `${uid}_${productID}_${size}`;
+    const itemRef = ref(database, `cart/${uid}/${itemKey}`);
+    const snapshot = await get(itemRef);
+    return snapshot.exists() ? (snapshot.val() as typCart) : null;
 };

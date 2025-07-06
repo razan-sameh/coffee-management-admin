@@ -19,6 +19,7 @@ import ProductDetails from './pages/productDetails/ProductDetails'
 import EditProduct from './pages/productEditor/ProductEditor'
 import AddProduct from './pages/productEditor/ProductEditor'
 import { ConfirmDialogProvider } from './provider/ConfirmDialogProvider'
+import OrderList from './pages/orderList/OrderList'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -40,6 +41,10 @@ createRoot(document.getElementById('root')!).render(
                       <Route path=":id" element={<ProductDetails />} />
                       <Route path="edit/:id" element={<EditProduct isEditMode={true} />} />
                       <Route path="add" element={<AddProduct isEditMode={false} />} />
+                    </Route>
+                    <Route path="order">
+                      <Route index element={<OrderList />} />
+                      <Route path=":id" element={<ProductDetails />} />
                     </Route>
                   </Route>
                 </Route>

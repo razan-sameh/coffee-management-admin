@@ -22,6 +22,7 @@ import { ConfirmDialogProvider } from './provider/ConfirmDialogProvider'
 import OrderList from './pages/orderList/OrderList'
 import OrderDetails from './pages/orderDetails.tsx/OrderDetails'
 import CartSyncProvider from './provider/CartSyncProvider'
+import Reports from './pages/reports/Reports'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -29,34 +30,35 @@ createRoot(document.getElementById('root')!).render(
       <ThemeProvider>
         <BrowserRouter>
           <AuthProvider>
-              <CartSyncProvider>
+            <CartSyncProvider>
 
-            <ConfirmDialogProvider>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route element={<ProtectedRoute redirectTo="/login" />}>
-                  <Route path="/" element={<DashboardLayout />} >
-                    <Route index element={<Home />} />
-                    <Route path="user" element={<UserList />} />
-                    <Route path="category" element={<CategoryList />} />
-                    <Route path="product">
-                      <Route index element={<ProductList />} />
-                      <Route path=":id" element={<ProductDetails />} />
-                      <Route path="edit/:id" element={<EditProduct isEditMode={true} />} />
-                      <Route path="add" element={<AddProduct isEditMode={false} />} />
-                    </Route>
-                    <Route path="order">
-                      <Route index element={<OrderList />} />
-                      <Route path=":id" element={<OrderDetails />} />
+              <ConfirmDialogProvider>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route element={<ProtectedRoute redirectTo="/login" />}>
+                    <Route path="/" element={<DashboardLayout />} >
+                      <Route index element={<Home />} />
+                      <Route path="user" element={<UserList />} />
+                      <Route path="category" element={<CategoryList />} />
+                      <Route path="product">
+                        <Route index element={<ProductList />} />
+                        <Route path=":id" element={<ProductDetails />} />
+                        <Route path="edit/:id" element={<EditProduct isEditMode={true} />} />
+                        <Route path="add" element={<AddProduct isEditMode={false} />} />
+                      </Route>
+                      <Route path="order">
+                        <Route index element={<OrderList />} />
+                        <Route path=":id" element={<OrderDetails />} />
+                      </Route>
+                      <Route path="reports" element={<Reports/>} />
                     </Route>
                   </Route>
-                </Route>
-                {/* Optionally handle 404 */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </ConfirmDialogProvider>
-            <ToastProvider />
+                  {/* Optionally handle 404 */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </ConfirmDialogProvider>
+              <ToastProvider />
             </CartSyncProvider>
           </AuthProvider>
         </BrowserRouter>

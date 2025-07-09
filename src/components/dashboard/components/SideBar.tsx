@@ -21,6 +21,7 @@ import { logoutUser } from '../../../redux/slices/authSlice';
 import { imagePaths } from '../../../assets/imagePaths';
 import { drawerWidth } from '../DashboardLayout';
 import DrawerHeader from './DrawerHeaderStyle';
+import BarChartIcon from '@mui/icons-material/BarChart';
 export default function SideBar({ open, handleDrawerClose }: { open: boolean, handleDrawerClose: () => void }) {
     const theme = useTheme();
     const navigation = useNavigate()
@@ -36,6 +37,7 @@ export default function SideBar({ open, handleDrawerClose }: { open: boolean, ha
         { text: "Category", icon: <WidgetsIcon />, path: "category" },
         { text: "Product", icon: <LocalMallIcon />, path: "product" },
         { text: "Order", icon: <ReceiptLongIcon />, path: "order" },
+        { text: "Reports", icon: <BarChartIcon />, path: "reports" },
     ];
     const openedMixin = (theme: Theme): CSSObject => ({
         width: drawerWidth,

@@ -1,5 +1,5 @@
 import { get, off, onValue, ref } from "firebase/database";
-import type { typCart, typCategory, typProduct, typUser } from "../content/types";
+import type { typCart, typCategory, typOrder, typProduct, typUser } from "../content/types";
 import { database } from "../services/configuration";
 import type { enmSize } from "../content/enums";
 
@@ -121,4 +121,16 @@ export const getCartItem = async (
     const itemRef = ref(database, `cart/${uid}/${itemKey}`);
     const snapshot = await get(itemRef);
     return snapshot.exists() ? (snapshot.val() as typCart) : null;
+};
+
+export const getAllOrders = (
+    callback: (orders: Record<string, typOrder>) => void
+) => {
+    const ordersRef = ref(database, 'order');
+    const unsubscribe = onValue(ordersRef, (snapshot) => {
+        const data = snapshot.val() || {};
+        callback(data);
+    });
+
+    return () => unsubscribe(); // cleanup for useEffect
 };

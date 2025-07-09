@@ -2,48 +2,47 @@
 import { useEffect, useMemo, useState } from "react";
 import { imagePaths } from '../../assets/imagePaths';
 import SmartDataGrid from '../../components/smartDataGrid/SmartDataGrid';
-import type { typProduct, typCategory, typOrder } from '../../content/types';
+import type { typOrder, typUser } from '../../content/types';
 import { deleteProductById } from '../../database/delete';
-import { getAllCategories, getAllProducts } from '../../database/select';
+import {  getAllOrders, getAllUsers } from '../../database/select';
 import { getColumns } from './component/columns';
 import { useNavigate } from "react-router";
 
 export default function OrderList() {
-    const [categories, setCategories] = useState<Record<string, typCategory>>({});
-    const [products, setProducts] = useState<Record<string, typProduct>>({});
-    const navigate = useNavigate()
+    const [orders, setOrders] = useState<Record<string, typOrder>>({});
+    const [users, setUsers] = useState<Record<string, typUser>>({});
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const unsubscribe = getAllCategories((data) => {
-            setCategories(data);
+        const unsubscribeOrders = getAllOrders((data) => {
+            setOrders(data);
         });
-        return unsubscribe;
-    }, []);
-
-    useEffect(() => {
-        const unsubscribe = getAllProducts((data) => {
-            setProducts(data);
+        const unsubscribeUsers = getAllUsers((data) => {
+            setUsers(data);
         });
-        return unsubscribe;
-    }, []);
 
-    const mappedProducts = useMemo(() => {
-        return Object.entries(products).reduce((acc, [id, product]) => {
-            const categoryMatch = Object.values(categories).find(cat => +cat.ID === +product.category);
+        return () => {
+            unsubscribeOrders();
+            unsubscribeUsers();
+        };
+    }, []);
+    const mappedOrders = useMemo(() => {
+        return Object.entries(orders).reduce((acc, [id, order]) => {
+            const user = users[order.userId];
             acc[id] = {
-                ...product,
+                ...order,
                 id,
-                categoryTitle: categoryMatch?.title || "Unknown"
+                userName: user?.firstName + " " + user?.lastName || "Unknown"
             };
             return acc;
-        }, {} as Record<string, typProduct & { id: string | number; categoryTitle?: string }>);
-    }, [products, categories]);
+        }, {} as Record<string, typOrder & { id: string; userName?: string }>);
+    }, [orders, users]);
 
     return (
         <SmartDataGrid<typOrder & { id: string | number; userName?: string }>
             getColumns={(rowModesModel, actions) => getColumns(rowModesModel, actions)}
             getData={(callback) => {
-                callback(mappedProducts);
+                callback(mappedOrders);
                 return () => { };
             }}
             deleteData={deleteProductById}

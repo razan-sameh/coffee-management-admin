@@ -1,8 +1,8 @@
 import { get, push, ref, set } from 'firebase/database';
-import type { typDeliveryInfo, typOrderItem, typProduct, typUser } from '../content/types';
+import type { typOrder, typProduct, typUser } from '../content/types';
 import { database } from '../services/configuration'; // adjust the path
 import { getProductById } from './select';
-import { enmAddToCartMode, type enmOrderType, type enmPaymentMethod, type enmSize } from '../content/enums';
+import { enmAddToCartMode, type enmSize } from '../content/enums';
 import { v4 as uuidv4 } from 'uuid';
 
 export const insertUser = (user: typUser) => {
@@ -63,39 +63,16 @@ export const addItemToCart = async (
     await set(userCartRef, cartItems);
 };
 
-type CreateOrderParams = {
-    userId: string;
-    cartItems: typOrderItem[];
-    total: number;
-    paymentMethod: enmPaymentMethod;
-    orderType: enmOrderType;
-    deliveryInfo: typDeliveryInfo | null;
-};
-
-export const createOrder = async ({
-    userId,
-    cartItems,
-    total,
-    paymentMethod,
-    orderType,
-    deliveryInfo,
-}: CreateOrderParams): Promise<string> => {
+export const createOrder = async (order: Omit<typOrder, 'id'>): Promise<string> => {
     const orderId = uuidv4();
-    const orderData = {
+
+    const orderData: typOrder = {
+        ...order,
         id: orderId,
-        items: cartItems.map((item) => ({
-            productID: item.productID,
-            size: item.size,
-            count: item.count,
-            price: item.price,
-        })),
-        total,
-        paymentMethod,
-        orderType,
-        deliveryInfo,
-        userId,
     };
+
     const orderRef = ref(database, `order/${orderId}`);
     await set(orderRef, orderData);
+
     return orderId;
 };

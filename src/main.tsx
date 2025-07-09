@@ -20,6 +20,8 @@ import EditProduct from './pages/productEditor/ProductEditor'
 import AddProduct from './pages/productEditor/ProductEditor'
 import { ConfirmDialogProvider } from './provider/ConfirmDialogProvider'
 import OrderList from './pages/orderList/OrderList'
+import OrderDetails from './pages/orderDetails.tsx/OrderDetails'
+import CartSyncProvider from './provider/CartSyncProvider'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -27,6 +29,8 @@ createRoot(document.getElementById('root')!).render(
       <ThemeProvider>
         <BrowserRouter>
           <AuthProvider>
+              <CartSyncProvider>
+
             <ConfirmDialogProvider>
               <Routes>
                 <Route path="/login" element={<Login />} />
@@ -44,7 +48,7 @@ createRoot(document.getElementById('root')!).render(
                     </Route>
                     <Route path="order">
                       <Route index element={<OrderList />} />
-                      <Route path=":id" element={<ProductDetails />} />
+                      <Route path=":id" element={<OrderDetails />} />
                     </Route>
                   </Route>
                 </Route>
@@ -53,6 +57,7 @@ createRoot(document.getElementById('root')!).render(
               </Routes>
             </ConfirmDialogProvider>
             <ToastProvider />
+            </CartSyncProvider>
           </AuthProvider>
         </BrowserRouter>
       </ThemeProvider>

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
   Divider,
@@ -6,24 +5,17 @@ import {
   Switch,
   FormControlLabel,
 } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import {  useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
 import {
-  clearCart as clearCartRedux,
+  placeOrder,
   removeFromCart as removeFromCartRedux,
-  setCart,
 } from '../../../../redux/slices/cartSlice';
 import {
-  listenToCart,
-  getMultipleProducts,
-} from '../../../../database/select';
-import {
   deleteCartItem,
-  clearCart as clearCartDB,
 } from '../../../../database/delete';
-import { createOrder } from '../../../../database/insert';
 import {
   enmOrderType,
   enmPaymentMethod,
@@ -36,7 +28,7 @@ import CartItem from './component/CartItem';
 import CartTotal from './component/CartTotal';
 import DeliveryForm from './component/DeliveryForm';
 import PaymentMethodSelector from './component/PaymentMethodSelector';
-import type { RootState } from '../../../../redux/store';
+import { useAppDispatch, type RootState } from '../../../../redux/store';
 import type { typProduct } from '../../../../content/types';
 
 interface DeliveryFormInputs {
@@ -48,9 +40,11 @@ interface DeliveryFormInputs {
 export default function CartSummary() {
   const theme = useTheme();
   const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
   const uid = useSelector((state: RootState) => state.auth.user?.Uid);
   const cartItems = useSelector((state: RootState) => state.cart.items);
-  const [products, setProducts] = useState<Record<string, typProduct>>({});
+  const products = useSelector((state: RootState) => state.cart.products);
+  // const [products, setProducts] = useState<Record<string, typProduct>>({});
   const [orderType, setOrderType] = useState<enmOrderType>(
     enmOrderType.dineIn
   );
@@ -71,18 +65,6 @@ export default function CartSummary() {
     },
   });
 
-  useEffect(() => {
-    if (!uid) return;
-
-    const unsubscribe = listenToCart(uid, async (items) => {
-      dispatch(setCart(items));
-      const productIds = [...new Set(items.map((item) => item.productID))];
-      const productData = await getMultipleProducts(productIds);
-      setProducts(productData);
-    });
-
-    return () => unsubscribe();
-  }, [uid]);
 
   // ✅ useMemo to optimize product lookup
   const productMap = useMemo(() => {
@@ -105,67 +87,54 @@ export default function CartSummary() {
     [cartItems]
   );
 
-  const onSubmit = async (data: DeliveryFormInputs) => {
-    if (!uid) return;
+const onSubmit = (data: DeliveryFormInputs) => {
+  if (!uid) return;
 
-    if (cartItems.length === 0) {
+  if (cartItems.length === 0) {
+    dispatch(
+      setToast({
+        message: 'Cart is empty.',
+        severity: enmToastSeverity.warning,
+      })
+    );
+    return;
+  }
+
+  const isDelivery = orderType === enmOrderType.delivery;
+
+  if (isDelivery) {
+    const hasErrors =
+      !data.name?.trim() || !data.phone?.trim() || !data.address?.trim();
+
+    if (hasErrors) {
       dispatch(
         setToast({
-          message: 'Cart is empty.',
+          message: 'Please fill in all delivery fields correctly.',
           severity: enmToastSeverity.warning,
         })
       );
       return;
     }
+  }
 
-    const isDelivery = orderType === enmOrderType.delivery;
-
-    if (isDelivery) {
-      const hasErrors =
-        !data.name?.trim() || !data.phone?.trim() || !data.address?.trim();
-
-      if (hasErrors) {
-        dispatch(
-          setToast({
-            message: 'Please fill in all delivery fields correctly.',
-            severity: enmToastSeverity.warning,
-          })
-        );
-        return;
-      }
-    }
-
-    const deliveryInfo = isDelivery ? data : null;
-
-    try {
-      await createOrder({
-        userId: uid,
-        cartItems,
-        total,
-        paymentMethod,
-        orderType,
-        deliveryInfo,
-      });
-
-      await clearCartDB(uid);
-      dispatch(clearCartRedux());
-      reset();
-
-      dispatch(
-        setToast({
-          message: 'Order placed successfully',
-          severity: enmToastSeverity.success,
-        })
-      );
-    } catch (err) {
-      dispatch(
-        setToast({
-          message: `Failed to place order: ${err}`,
-          severity: enmToastSeverity.error,
-        })
-      );
-    }
+  // ✅ Build typOrder (without id)
+  const orderPayload = {
+    userId: uid,
+    items: cartItems.map(({ productID, size, count, price }) => ({
+      productID,
+      size,
+      count,
+      price,
+    })),
+    total,
+    paymentMethod,
+    orderType,
+    deliveryInfo: isDelivery ? data : null,
   };
+
+  appDispatch(placeOrder(orderPayload)); // ⬅️ thunk handles DB + clearing cart
+  reset();
+};
 
   return (
     <Box

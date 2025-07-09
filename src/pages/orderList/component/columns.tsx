@@ -33,29 +33,6 @@ export const getColumns = (
             sortable: true,
             align: "left",
             headerAlign: "left",
-            renderCell: (params) => {
-                const { row } = params;
-                const imageUrl = row.image?.[0];
-                return (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        {imageUrl && (
-                            <img
-                                src={imageUrl}
-                                alt={row.title}
-                                width={32}
-                                height={32}
-                                loading="lazy"
-                                style={{
-                                    borderRadius: 50,
-                                    objectFit: "cover",
-                                    display: "block"
-                                }}
-                            />
-                        )}
-                        <span>{row.title}</span>
-                    </div>
-                );
-            },
         },
         {
             field: "orderType",
@@ -98,7 +75,8 @@ export const getColumns = (
             getActions: ({ id }) =>
                 getActions(id, rowModesModel, {
                     ...actions,
-                    showDetails: true, // 👈 example condition
-                }),
+                    showDetails: true,
+                    showEditDelete: false, // 👈 control this dynamically
+                })
         },
     ];

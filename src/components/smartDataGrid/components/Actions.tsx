@@ -22,6 +22,7 @@ export const getActions = (
         onCancel,
         onView,
         showDetails = false,
+        showEditDelete = true, // 👈 new prop
     }: {
         onEdit: (id: GridRowId) => () => void;
         onSave: (id: GridRowId) => () => void;
@@ -29,6 +30,7 @@ export const getActions = (
         onCancel: (id: GridRowId) => () => void;
         onView?: (id: GridRowId) => () => void;
         showDetails?: boolean;
+        showEditDelete?: boolean; // 👈 add to type
     }
 ) => {
     const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
@@ -48,10 +50,12 @@ export const getActions = (
         );
     }
 
-    actions.push(
-        <GridActionsCellItem key="edit" icon={<EditIcon />} label="Edit" onClick={onEdit(id)} />,
-        <GridActionsCellItem key="delete" icon={<DeleteIcon />} label="Delete" onClick={onDelete(id)} />
-    );
+    if (showEditDelete) {
+        actions.push(
+            <GridActionsCellItem key="edit" icon={<EditIcon />} label="Edit" onClick={onEdit(id)} />,
+            <GridActionsCellItem key="delete" icon={<DeleteIcon />} label="Delete" onClick={onDelete(id)} />
+        );
+    }
 
     return actions;
 };

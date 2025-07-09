@@ -4,6 +4,7 @@ import { database } from '../services/configuration'; // adjust the path
 import { getProductById } from './select';
 import { enmAddToCartMode, type enmSize } from '../content/enums';
 import { v4 as uuidv4 } from 'uuid';
+import moment from 'moment';
 
 export const insertUser = (user: typUser) => {
     set(ref(database, `/user/${user.Uid}`), {
@@ -63,12 +64,13 @@ export const addItemToCart = async (
     await set(userCartRef, cartItems);
 };
 
-export const createOrder = async (order: Omit<typOrder, 'id'>): Promise<string> => {
+export const createOrder = async (order: Omit<typOrder, 'id' | 'date'>): Promise<string> => {
     const orderId = uuidv4();
 
     const orderData: typOrder = {
-        ...order,
         id: orderId,
+        date: moment().format('YYYY-MM-DD HH:mm'),
+        ...order
     };
 
     const orderRef = ref(database, `order/${orderId}`);

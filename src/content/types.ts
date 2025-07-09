@@ -71,6 +71,7 @@ export type typOrder = {
     paymentMethod: enmPaymentMethod,
     orderType: enmOrderType,
     deliveryInfo: typDeliveryInfo | null,
-    userId: string
+    userId: string,
+    date : string
 }
 

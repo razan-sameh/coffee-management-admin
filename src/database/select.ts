@@ -16,6 +16,15 @@ export const getUserInfo = (
     return () => off(userRef, 'value', listener);
 };
 
+export const getUserById = async (uid: string): Promise<typUser | null> => {
+    const userRef = ref(database, `user/${uid}`);
+    const snapshot = await get(userRef);
+    if (snapshot.exists()) {
+        return snapshot.val() as typUser;
+    }
+    return null;
+};
+
 export const getAllUsers = (
     callback: (users: Record<string, typUser>) => void
 ): () => void => {
@@ -133,4 +142,17 @@ export const getAllOrders = (
     });
 
     return () => unsubscribe(); // cleanup for useEffect
+};
+
+export const getOrderById = async (orderId: string): Promise<typOrder | null> => {
+    try {
+        const snapshot = await get(ref(database, `order/${orderId}`));
+        if (snapshot.exists()) {
+            return snapshot.val() as typOrder;
+        }
+        return null;
+    } catch (error) {
+        console.error('Failed to fetch order:', error);
+        return null;
+    }
 };

@@ -25,7 +25,6 @@ export default function TopBar({ open, handleDrawerOpen }: {
     const cartItems = useSelector((state: RootState) => state.cart.items); // adjust according to your slice
     const cartCount = cartItems.reduce((sum, item) => sum + item.count, 0);
     const navigate = useNavigate();
-    console.log({cartItems});
     
     const AppBar = styled(MuiAppBar, {
         shouldForwardProp: (prop) => prop !== 'open',

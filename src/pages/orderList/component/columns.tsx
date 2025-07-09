@@ -26,6 +26,15 @@ export const getColumns = (
             },
         },
         {
+            field: "date",
+            headerName: "Transaction Date",
+            flex: 1.5,
+            editable: true,
+            sortable: true,
+            align: "left",
+            headerAlign: "left",
+        },
+        {
             field: "userName",
             headerName: "User Name",
             flex: 1.5,

@@ -21,7 +21,7 @@ const initialState: CartState = {
 // ✅ Reusable Thunk to Place Order using `typOrder`
 export const placeOrder = createAsyncThunk<
     void, // return type
-    Omit<typOrder, 'id'>,
+    Omit<typOrder,'id' | 'date'>,
     { rejectValue: string }
 >(
     'cart/placeOrder',

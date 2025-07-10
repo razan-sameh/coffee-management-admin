@@ -1,4 +1,4 @@
-import type { enmOrderType, enmPaymentMethod, enmRole, enmSize } from "./enums";
+import type { enmOrderStatus, enmOrderType, enmPaymentMethod, enmPlatform, enmRole, enmSize } from "./enums";
 
 export type typCategory = {
     ID: number | string,
@@ -72,6 +72,18 @@ export type typOrder = {
     orderType: enmOrderType,
     deliveryInfo: typDeliveryInfo | null,
     userId: string,
-    date : string
+    date: string,
+    platform: enmPlatform
 }
 
+export type typDateRange = { start: string; end: string };
+
+export type typFilters = {
+    dateRange: typDateRange;
+    status: enmOrderStatus,
+    platform: enmPlatform;
+    orderType: enmOrderType;
+    category: typCategory | string;
+    product: typProduct | string;
+    paymentMethod: enmPaymentMethod;
+};

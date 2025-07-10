@@ -1,40 +1,97 @@
-import React from 'react';
-import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow, Paper, TableContainer, Avatar } from '@mui/material';
-import type { typProduct } from '../../../content/types';
+import React, { useEffect, useState } from 'react';
+import {
+    Box,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Avatar,
+    Typography,
+} from '@mui/material';
+import type { typCategory, typOrder, typProduct } from '../../../content/types';
+import { getCategoryById } from '../../../database/select';
 
 type Props = {
-    products: typProduct[];
+    filteredOrders: typOrder[];
+    products: Record<string, typProduct>;
 };
 
-export const ProductSalesReport: React.FC<Props> = ({ products }) => {
+type ProductStats = {
+    ID: string;
+    title: string;
+    image: string;
+    totalOrders: number;
+    totalCollected: number;
+    category: typCategory;
+};
+
+export const ProductSalesReport: React.FC<Props> = ({ filteredOrders, products }) => {
+    const [productStats, setProductStats] = useState<ProductStats[]>([]);
+
+    useEffect(() => {
+        const computeStats = async () => {
+            const stats: Record<string, ProductStats> = {};
+
+            for (const order of filteredOrders) {
+                for (const item of order.items || []) {
+                    const product = products[item.productID];
+                    if (!product) continue;
+
+                    if (!stats[product.ID]) {
+                        const category = await getCategoryById(product.category); // use category ID not product.ID
+                        if (!category) continue;
+
+                        stats[product.ID] = {
+                            ID: product.ID,
+                            title: product.title,
+                            image: product.image[0],
+                            totalOrders: 0,
+                            totalCollected: 0,
+                            category,
+                        };
+                    }
+
+                    stats[product.ID].totalOrders += item.count;
+                    stats[product.ID].totalCollected += item.count * item.price;
+                }
+            }
+
+            setProductStats(Object.values(stats));
+        };
+
+        computeStats();
+    }, [filteredOrders, products]);
+
     return (
         <Box>
-            <Typography variant="h5" gutterBottom>Product Sales Report</Typography>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
                         <TableRow>
                             <TableCell>No</TableCell>
                             <TableCell>Product</TableCell>
-                            <TableCell>Item Order</TableCell>
+                            <TableCell>Item Orders</TableCell>
                             <TableCell>Total Collected</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {products.map((product, index) => (
-                            <TableRow key={product.ID}>
+                        {productStats.map((stat, index) => (
+                            <TableRow key={stat.ID}>
                                 <TableCell>{index + 1}</TableCell>
                                 <TableCell>
                                     <Box display="flex" alignItems="center" gap={1}>
-                                        <Avatar src={product.image[0]} />
+                                        <Avatar src={stat.image} />
                                         <Box>
-                                            <Typography>{product.title}</Typography>
-                                            <Typography variant="caption">Coffee and Beverage</Typography>
+                                            <Typography>{stat.title}</Typography>
+                                            <Typography variant="caption">{stat.category.title}</Typography>
                                         </Box>
                                     </Box>
                                 </TableCell>
-                                <TableCell>120 Orders</TableCell>
-                                <TableCell>$600.00</TableCell>
+                                <TableCell>{stat.totalOrders} Orders</TableCell>
+                                <TableCell>${stat.totalCollected.toFixed(2)}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

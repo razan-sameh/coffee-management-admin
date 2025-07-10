@@ -2,7 +2,7 @@ import { get, push, ref, set } from 'firebase/database';
 import type { typOrder, typProduct, typUser } from '../content/types';
 import { database } from '../services/configuration'; // adjust the path
 import { getProductById } from './select';
-import { enmAddToCartMode, type enmSize } from '../content/enums';
+import { enmAddToCartMode, enmPlatform, type enmSize } from '../content/enums';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 
@@ -64,12 +64,13 @@ export const addItemToCart = async (
     await set(userCartRef, cartItems);
 };
 
-export const createOrder = async (order: Omit<typOrder, 'id' | 'date'>): Promise<string> => {
+export const createOrder = async (order: Omit<typOrder, 'id' | 'date' | 'platform'>): Promise<string> => {
     const orderId = uuidv4();
 
     const orderData: typOrder = {
         id: orderId,
         date: moment().format('YYYY-MM-DD HH:mm'),
+        platform: enmPlatform.web,
         ...order
     };
 

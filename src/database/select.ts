@@ -95,7 +95,6 @@ export const listenToCart = (
             const items = Object.values(data) as typCart[];
             callback(items);
         } else {
-            console.log("No cart items found for user:", uid);
             callback([]);
         }
     }, (error) => {

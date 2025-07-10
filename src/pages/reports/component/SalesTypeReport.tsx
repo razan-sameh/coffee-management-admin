@@ -1,40 +1,99 @@
 import { PieChart } from '@mui/x-charts';
-import { Box, Grid, Typography, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
-import React from 'react';
+import {
+    Box,
+    Grid,
+    Typography,
+    TableContainer,
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    useTheme,
+} from '@mui/material';
+import React, { useMemo } from 'react';
+import type { typOrder } from '../../../content/types';
+import { enmPlatform } from '../../../content/enums';
 
+type Props = {
+    filteredOrders: typOrder[];
+};
 
-const orderPlatformData = [
-    { id: 0, value: 614, label: 'Mobile App' },
-    { id: 1, value: 200, label: 'Website' },
-    { id: 2, value: 354, label: 'Self Order' },
-    { id: 3, value: 818, label: 'Offline Order' },
-];
+type ReportItem = {
+    label: string;
+    value: number;
+    collected: number;
+};
 
-const orderTypeData = [
-    { id: 0, value: 843, label: 'Dine In' },
-    { id: 1, value: 342, label: 'Pickup' },
-    { id: 2, value: 718, label: 'Delivery' },
-    { id: 3, value: 783, label: 'Takeaway' },
-    { id: 4, value: 649, label: 'Reservation' },
-];
+export const SalesTypeReport: React.FC<Props> = ({ filteredOrders }) => {
+    const theme = useTheme();
+    const platformColors = [
+        theme.palette.primary.main,
+        theme.palette.secondary.main,
+        theme.palette.success.main,
+        theme.palette.warning.main,
+    ];
 
-export const SalesTypeReport: React.FC = () => {
+    const orderPlatformData: ReportItem[] = useMemo(() => {
+        const stats: Record<string, ReportItem> = {};
+
+        for (const order of filteredOrders) {
+            const platform = order.platform;
+            if (!stats[platform]) {
+                stats[platform] = {
+                    label: platform || enmPlatform.mobile,
+                    value: 0,
+                    collected: 0,
+                };
+            }
+            stats[platform].value += 1;
+            stats[platform].collected += order.total;
+        }
+
+        return Object.values(stats);
+    }, [filteredOrders]);
+
+    const orderTypeData: ReportItem[] = useMemo(() => {
+        const stats: Record<string, ReportItem> = {};
+
+        for (const order of filteredOrders) {
+            const type = order.orderType;
+            if (!stats[type]) {
+                stats[type] = {
+                    label: type,
+                    value: 0,
+                    collected: 0,
+                };
+            }
+            stats[type].value += 1;
+            stats[type].collected += order.total;
+        }
+
+        return Object.values(stats);
+    }, [filteredOrders]);
     return (
         <Box>
-            <Typography variant="h5" gutterBottom>Sales Type Report</Typography>
             <Grid container spacing={4} >
                 {/* Order Platform Section */}
-                <Grid size={12} sx={{ md: 6 }}>
-                    <Grid container spacing={4} direction={'row'}>
-                        <Grid size={6} >
+                <Grid size={12} sx={{ md: 6, mb: 2 }}>
+                    <Grid container spacing={4} direction={'row'} alignItems={'center'}>
+                        <Grid size={4} >
                             <Typography sx={{ textAlign: 'center' }} variant="h6" gutterBottom>Order Platform</Typography>
                             <PieChart
-                                series={[{ data: orderPlatformData }]}
+                                series={[{
+                                    data: orderPlatformData.map((d, i) => ({
+                                        id: i,
+                                        value: d.value,
+                                        label: d.label,
+                                        color: platformColors[i % platformColors.length], // ✅ assign color from theme
+                                    })),
+                                }]}
                                 width={300}
                                 height={200}
                             />
                         </Grid>
-                        <Grid size={6} >
+                        <Grid size={7} >
                             <TableContainer component={Paper} sx={{ mt: 2 }}>
                                 <Table>
                                     <TableHead>
@@ -47,11 +106,11 @@ export const SalesTypeReport: React.FC = () => {
                                     </TableHead>
                                     <TableBody>
                                         {orderPlatformData.map((item, index) => (
-                                            <TableRow key={item.id}>
+                                            <TableRow key={item.label}>
                                                 <TableCell>{index + 1}</TableCell>
                                                 <TableCell>{item.label}</TableCell>
-                                                <TableCell>120 Orders</TableCell>
-                                                <TableCell>${item.value}.00</TableCell>
+                                                <TableCell>{item.value} Orders</TableCell>
+                                                <TableCell>${item.collected.toFixed(2)}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -60,19 +119,25 @@ export const SalesTypeReport: React.FC = () => {
                         </Grid>
                     </Grid>
                 </Grid>
-
                 {/* Order Type Section */}
                 <Grid size={12} sx={{ md: 6 }}>
-                    <Grid container spacing={4} direction={'row'}>
-                        <Grid size={6} >
+                    <Grid container spacing={4} direction={'row'} alignItems={'center'}>
+                        <Grid size={4} >
                             <Typography sx={{ textAlign: 'center' }} variant="h6" gutterBottom>Order Type</Typography>
                             <PieChart
-                                series={[{ data: orderTypeData }]}
+                                series={[{
+                                    data: orderTypeData.map((d, i) => ({
+                                        id: i,
+                                        value: d.value,
+                                        label: d.label,
+                                        color: platformColors[i % platformColors.length], // ✅ assign color from theme
+                                    })),
+                                }]}
                                 width={300}
                                 height={200}
                             />
                         </Grid>
-                        <Grid size={6} >
+                        <Grid size={7} >
                             <TableContainer component={Paper} sx={{ mt: 2 }}>
                                 <Table>
                                     <TableHead>
@@ -85,11 +150,11 @@ export const SalesTypeReport: React.FC = () => {
                                     </TableHead>
                                     <TableBody>
                                         {orderTypeData.map((item, index) => (
-                                            <TableRow key={item.id}>
+                                            <TableRow key={item.label}>
                                                 <TableCell>{index + 1}</TableCell>
                                                 <TableCell>{item.label}</TableCell>
-                                                <TableCell>120 Orders</TableCell>
-                                                <TableCell>${item.value}.00</TableCell>
+                                                <TableCell>{item.value} Orders</TableCell>
+                                                <TableCell>${item.collected.toFixed(2)}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>

@@ -1,10 +1,27 @@
+export enum enmExportType{
+    excel = 'Excel',
+    csv = 'CSV',
+}
+export enum enmOrderStatus {
+    today = 'Today',
+    month = 'Month',
+    year = "Year",
+    all = "All"
+}
+export enum enmPlatform {
+    mobile = 'Mobile App',
+    web = 'Website',
+    all = "All"
+}
 export enum enmPaymentMethod {
     cash = 'Cash',
     CreditCard = 'Credit Card',
+    all = "All"
 }
 export enum enmOrderType {
     dineIn = 'Dine In',
-    delivery = 'Delivery'
+    delivery = 'Delivery',
+    all = "All"
 }
 export enum enmSize {
     small = 'S',

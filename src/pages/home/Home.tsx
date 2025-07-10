@@ -1,4 +1,4 @@
-import { Grid, Stack } from "@mui/material";
+import { Grid, Stack, useMediaQuery, useTheme } from "@mui/material";
 import HeroBanner from "./component/HeroBanner";
 import ProductGrid from "./component/ProductGrid";
 import TopBar from "./component/TopBar";
@@ -14,6 +14,8 @@ export default function Home() {
   const [categories, setCategories] = useState<Record<string, typCategory>>({});
   const [selectedCategory, setSelectedCategory] = useState('');
   const [search, setSearch] = useState('');
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     const unsubscribeProducts = getAllProducts((data) => {
@@ -49,7 +51,11 @@ export default function Home() {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid size={8}>
+        {/* Main Content */}
+        <Grid 
+          size={{ xs: 12, md: 8 }} 
+          order={{ xs: 2, md: 1 }}
+        >
           <Stack spacing={2}>
             <HeroBanner />
             <TopBar
@@ -62,8 +68,24 @@ export default function Home() {
             <ProductGrid products={filtered} />
           </Stack>
         </Grid>
-        <Grid size={4}>
-          <Stack spacing={2}>
+        
+        {/* Sidebar */}
+        <Grid 
+          size={{ xs: 12, md: 4 }}
+          order={{ xs: 1, md: 2 }}
+        >
+          <Stack 
+            spacing={2}
+            direction={"column"}
+            sx={isMobile ? { 
+              overflowX: 'auto',
+              pb: 1,
+              '& > *': { 
+                minWidth: 280,
+                flex: '0 0 auto'
+              }
+            } : {}}
+          >
             <PromoCard
               title="25% OFF!"
               description="All coffee orders today only"

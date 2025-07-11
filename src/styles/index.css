@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
-
 :root {
   line-height: 1.5;
   font-family: "Inter", sans-serif !important;
@@ -12,14 +11,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  --primayColor: #4C280A;
-  --secondColor: #D78325;
-  --thirdColor: #844511;
-  --fourthColor: #935831;
-  --backgroundColor: #E5DCD3;
-  --darkTextColor: #2E2C2A;
-  --lightTextColor: #F5F5F5
 }
 
 h2 {
@@ -28,13 +19,9 @@ h2 {
 
 a {
   font-weight: 500;
-  color: var(--secondColor);
   text-decoration: inherit;
 }
 
-a:hover {
-  color: var(--thirdColor);
-}
 
 body {
   margin: 0;
@@ -47,16 +34,4 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
-}
-
-.custom-button {
-  background-color: var(--secondColor) !important;
-  color: white !important;
-  border: none !important;
-}
-
-.custom-button:hover,
-.custom-button:focus {
-  background-color: var(--thirdColor);
-  outline: none;
 }

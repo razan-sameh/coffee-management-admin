@@ -48,7 +48,9 @@ const TransactionsTable: React.FC<Props> = ({
                                 <TableCell>{order.id}</TableCell>
                                 <TableCell>
                                     <Typography>
-                                        {user?.firstName} {user?.lastName}
+                                        {user?.firstName && user?.lastName
+                                            ? `${user.firstName} ${user.lastName}`
+                                            : "Unknown"}
                                     </Typography>
                                     <Typography variant="caption">
                                         {user?.address?.[0]}

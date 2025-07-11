@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { imagePaths } from '../assets/imagePaths';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import { useAppDispatch } from '../redux/store';
 import { initializeAuth } from '../redux/slices/authSlice';
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState(true);
+    const theme = useTheme();
 
     useEffect(() => {
         dispatch(initializeAuth())
@@ -31,7 +32,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
-                bgcolor="var(--backgroundColor)"
+                bgcolor={theme.palette.background.default}
             >
                 <Box
                     component="img"

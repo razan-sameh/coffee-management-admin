@@ -1,4 +1,4 @@
-import { Stack, TextField } from '@mui/material';
+import { Stack, TextField, useTheme } from '@mui/material';
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { phoneRegExp } from '../../../../../utils/RegExp';
 
@@ -14,9 +14,11 @@ interface Props {
 }
 
 export default function DeliveryForm({ register, errors }: Props) {
+    const theme = useTheme();
+
     return (
         <>
-            <Stack direction="column"  sx={{ mt: 2 }}>
+            <Stack direction="column" sx={{ mt: 2 }}>
                 <label htmlFor="name" className="label-text">Customer Name</label>
                 <TextField
                     id="name"
@@ -27,7 +29,7 @@ export default function DeliveryForm({ register, errors }: Props) {
                     {...register('name', { required: true, minLength: 2 })}
                     sx={{
                         '& .MuiFilledInput-root:after': {
-                            borderBottom: '2px solid var(--secondColor)',
+                            borderBottom: `2px solid ${theme.palette.secondary.main}` ,
                         },
                     }}
                 />
@@ -44,7 +46,7 @@ export default function DeliveryForm({ register, errors }: Props) {
                     {...register('phone', { required: true, pattern: phoneRegExp })}
                     sx={{
                         '& .MuiFilledInput-root:after': {
-                            borderBottom: '2px solid var(--secondColor)',
+                            borderBottom: `2px solid ${theme.palette.secondary.main}`,
                         },
                     }}
                 />
@@ -63,7 +65,7 @@ export default function DeliveryForm({ register, errors }: Props) {
                     {...register('address', { required: true, minLength: 5 })}
                     sx={{
                         '& .MuiFilledInput-root:after': {
-                            borderBottom: '2px solid var(--secondColor)',
+                            borderBottom: `2px solid ${theme.palette.secondary.main}`,
                         },
                     }}
                 />

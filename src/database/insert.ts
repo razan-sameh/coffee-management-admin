@@ -6,10 +6,11 @@ import { enmAddToCartMode, enmPlatform, type enmSize } from '../content/enums';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 
-export const insertUser = (user: typUser) => {
+export const insertUser = (user: typUser) => {    
     set(ref(database, `/user/${user.Uid}`), {
         Uid: user.Uid ?? '',
-        name: user.firstName + ' ' + user.lastName,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email ?? '',
         password: user.password ?? '',
         role: user.role ?? '',

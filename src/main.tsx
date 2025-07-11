@@ -24,6 +24,7 @@ import OrderDetails from './pages/orderDetails.tsx/OrderDetails'
 import CartSyncProvider from './provider/CartSyncProvider'
 import Reports from './pages/reports/Reports'
 import { FilterProvider } from './provider/FilterProvider'
+import ForgetPassword from './pages/forgetPassword/ForgetPassword'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -37,6 +38,7 @@ createRoot(document.getElementById('root')!).render(
                   <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
+                    <Route path="/forgetPassword" element={<ForgetPassword />} />
                     <Route element={<ProtectedRoute redirectTo="/login" />}>
                       <Route path="/" element={<DashboardLayout />} >
                         <Route index element={<Home />} />

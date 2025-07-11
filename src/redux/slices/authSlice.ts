@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInWithPopup } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
 import app, { faceBookprovider, googleProvider } from '../../services/configuration';
 import { insertUser } from '../../database/insert';
 import type { typUser } from '../../content/types';
@@ -93,23 +93,21 @@ export const loginUser = createAsyncThunk(
     async (formData: { email: string; password: string }, { rejectWithValue, dispatch }) => {
         try {
             const res = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-            return {
-                Uid: res.user.uid,
-                email: formData.email,
-                firstName: '',
-                lastName: '',
-                phoneNumber: [],
-                password: '',
-                role: enmRole.user,
-            } as typUser;
+
+            const userData: typUser | null = await new Promise((resolve) => {
+                getUserInfo(res.user.uid, (user) => {
+                    resolve(user);
+                });
+            });
+
+            return userData;
         } catch (error: any) {
             if (error.code === 'auth/invalid-credential') {
                 dispatch(setToast({
                     message: 'The account or password is not correct!',
                     severity: enmToastSeverity.error,
                 }));
-            }
-            else {
+            } else {
                 dispatch(setToast({
                     message: `Authentication failed: ${error.message}`,
                     severity: enmToastSeverity.error,
@@ -119,6 +117,7 @@ export const loginUser = createAsyncThunk(
         }
     }
 );
+
 
 // loginUserWithGoogle
 export const loginUserWithGoogle = createAsyncThunk(
@@ -186,6 +185,27 @@ export const loginUserWithFacebook = createAsyncThunk(
         }
     }
 );
+
+export const sendResetPasswordEmail = createAsyncThunk(
+    'auth/sendResetPasswordEmail',
+    async (email: string, { rejectWithValue, dispatch }) => {
+        try {
+            await sendPasswordResetEmail(auth, email);
+            dispatch(setToast({
+                message: 'Password reset email sent successfully.',
+                severity: enmToastSeverity.success,
+            }));
+        } catch (error: any) {
+            console.error("Reset error:", error);
+            dispatch(setToast({
+                message: `Failed to send reset email: ${error.message}`,
+                severity: enmToastSeverity.error,
+            }));
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 
 
 // Logout

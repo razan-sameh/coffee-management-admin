@@ -14,9 +14,27 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ label, value, info, color }) 
     return (
         <Card sx={{ backgroundColor: color, height: '100%' }}>
             <CardContent>
-                <Typography variant="subtitle1" color={theme.palette.text.primary}>{label}</Typography>
-                <Typography variant="h6" color={theme.palette.text.primary}>{value}</Typography>
-                <Typography variant="caption" color={theme.palette.text.primary}>{info}</Typography>
+                <Typography
+                    variant="subtitle1"
+                    color={theme.palette.text.primary}
+                    sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}
+                >
+                    {label}
+                </Typography>
+                <Typography
+                    variant="h6"
+                    color={theme.palette.text.primary}
+                    sx={{ fontSize: { xs: '1.2rem', md: '1.5rem' } }}
+                >
+                    {value}
+                </Typography>
+                <Typography
+                    variant="caption"
+                    color={theme.palette.text.primary}
+                    sx={{ fontSize: { xs: '0.7rem', md: '0.8rem' } }}
+                >
+                    {info}
+                </Typography>
             </CardContent>
         </Card>
     );

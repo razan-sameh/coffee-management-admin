@@ -24,14 +24,17 @@ export const TransactionsReport: React.FC<Props> = ({ filteredOrders }) => {
     return (
         <Box>
             <Grid container spacing={2} mb={2}>
-                {summaryData.map((item : any , index : number) => (
-                    <Grid spacing={2} mb={2} mt={2} key={index} flex={1}>
+                {summaryData.map((item: any, index: number) => (
+                    <Grid key={index} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                         <SummaryCard {...item} />
                     </Grid>
                 ))}
             </Grid>
-            <TransactionsTable filteredOrders={filteredOrders} />
+
+            {/* Responsive table/card view */}
+            <Box sx={{ mt: 2 }}>
+                <TransactionsTable filteredOrders={filteredOrders} />
+            </Box>
         </Box>
     );
 };
-

@@ -12,8 +12,8 @@ import {
     FilterList as FilterIcon,
 } from '@mui/icons-material';
 
-import { ProductSalesReport } from './component/ProductSalesReport';
-import { SalesTypeReport } from './component/SalesTypeReport';
+import { ProductSalesReport } from './component/productSalesReport/ProductSalesReport';
+import { SalesTypeReport } from './component/salesTypeReport/SalesTypeReport';
 import { TransactionsReport } from './component/transactionsReport/TransactionsReport';
 import { TabPanel } from './component/ReportTabs';
 import { useFilter } from '../../provider/FilterProvider';
@@ -32,39 +32,40 @@ export default function Reports() {
     const [orders, setOrders] = useState<typOrder[]>([]);
     const { filters } = useFilter();
     const { products, categories } = useStaticData();
+
     const filteredOrders = useMemo(() => {
         return filterOrders(orders, filters, products, categories);
     }, [orders, filters, products, categories]);
-    // Fetch orders from Firebase on mount
+
     useEffect(() => {
         const unsubscribe = getAllOrders((ordersRecord) => {
             const ordersArray = Object.values(ordersRecord);
             setOrders(ordersArray);
         });
 
-        return () => unsubscribe(); // Cleanup on unmount
+        return () => unsubscribe();
     }, []);
 
     const renderTabPanel = (index: number) => {
         switch (index) {
             case 0:
-                return <TransactionsReport filteredOrders={filteredOrders}/>;
+                return <TransactionsReport filteredOrders={filteredOrders} />;
             case 1:
-                return <ProductSalesReport products={products} filteredOrders={filteredOrders}/>;
+                return <ProductSalesReport products={products} filteredOrders={filteredOrders} />;
             case 2:
-                return <SalesTypeReport filteredOrders={filteredOrders}/>;
+                return <SalesTypeReport filteredOrders={filteredOrders} />;
             default:
                 return null;
         }
     };
 
     return (
-        <Box sx={{ width: '100%' }}>
-            {/* Tabs */}
+        <Box sx={{ width: '100%', px: { xs: 1, sm: 2, md: 4 } }}>
             <Tabs
                 value={tabIndex}
                 onChange={(_, val) => setTabIndex(val)}
                 variant="fullWidth"
+                // scrollButtons="auto"
                 indicatorColor="primary"
             >
                 {tabLabels.map((label) => (
@@ -72,27 +73,32 @@ export default function Reports() {
                         key={label}
                         label={label}
                         sx={{
+                            fontSize: { xs: '0.75rem', sm: '0.85rem', md: '1rem' }, // 👈 responsive tab text size
                             '&.Mui-selected': {
                                 color: theme.palette.primary.contrastText,
                                 fontWeight: 'bold',
                             },
                         }}
                     />
+
                 ))}
             </Tabs>
 
             <Divider />
 
-            {/* Title and Action Buttons */}
             <Box
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
                 p={2}
+                flexDirection={{ xs: 'column', sm: 'row' }}
+                gap={2}
             >
-                <Typography variant="h5">{tabLabels[tabIndex]} Report</Typography>
+                <Typography variant="h5" textAlign={{ xs: 'center', sm: 'start' }}>
+                    {tabLabels[tabIndex]} Report
+                </Typography>
 
-                <Box display="flex" gap={1}>
+                <Box display="flex" gap={1} flexWrap="wrap" justifyContent={{ xs: 'center', sm: 'flex-end' }}>
                     <Button
                         variant="outlined"
                         startIcon={<FilterIcon />}
@@ -108,19 +114,15 @@ export default function Reports() {
                     >
                         Advance Filter
                     </Button>
-
-                    {/* ✅ Replaced Export Button with Dropdown Export Menu */}
                     <ExportMenu data={filteredOrders} />
                 </Box>
             </Box>
 
-            {/* Tab Panels */}
             {tabLabels.map((_, index) => (
                 <TabPanel key={index} value={tabIndex} index={index}>
                     {tabIndex === index && renderTabPanel(index)}
                 </TabPanel>
             ))}
-
         </Box>
     );
 }

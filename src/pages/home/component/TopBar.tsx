@@ -23,7 +23,13 @@ export default function TopBar({
     return (
         <Box display="flex" gap={2} mb={3} justifyContent="space-between">
             <Typography variant="title">Menu</Typography>
-            <Box display="flex" gap={2}>
+            <Box
+                display="flex"
+                flexDirection={{ xs: 'column', sm: 'row' }}
+                gap={2}
+                justifyContent={'flex-end'}
+                width="100%"
+            >
                 <TextField
                     variant="outlined"
                     placeholder="Search for coffee..."

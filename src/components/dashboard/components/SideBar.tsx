@@ -1,36 +1,72 @@
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
+import {
+    Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText,
+    List, useTheme, styled, Drawer as MuiDrawer, type Theme, type CSSObject
+} from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import List from '@mui/material/List';
-import { styled, useTheme, type CSSObject, type Theme } from '@mui/material';
-import MuiDrawer from '@mui/material/Drawer';
 import GroupIcon from '@mui/icons-material/Group';
-import { useNavigate } from 'react-router';
 import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
-import WidgetsIcon from '@mui/icons-material/Widgets';import LocalMallIcon from '@mui/icons-material/LocalMall';
+import WidgetsIcon from '@mui/icons-material/Widgets';
+import LocalMallIcon from '@mui/icons-material/LocalMall';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import { useThemeMode } from '../../../provider/ThemeProvider';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import { useNavigate } from 'react-router';
 import { useAppDispatch } from '../../../redux/store';
 import { logoutUser } from '../../../redux/slices/authSlice';
 import { imagePaths } from '../../../assets/imagePaths';
 import { drawerWidth } from '../DashboardLayout';
+import { useThemeMode } from '../../../provider/ThemeProvider';
 import DrawerHeader from './DrawerHeaderStyle';
-import BarChartIcon from '@mui/icons-material/BarChart';
-export default function SideBar({ open, handleDrawerClose }: { open: boolean, handleDrawerClose: () => void }) {
+
+const openedMixin = (theme: Theme): CSSObject => ({
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+    }),
+    overflowX: 'hidden',
+});
+
+const closedMixin = (theme: Theme): CSSObject => ({
+    width: 65,
+    transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    overflowX: 'hidden',
+});
+
+
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })<{ open?: boolean }>(
+    ({ theme, open }) => ({
+        width: drawerWidth,
+        flexShrink: 0,
+        whiteSpace: 'nowrap',
+        boxSizing: 'border-box',
+        ...(open && {
+            ...openedMixin(theme),
+            '& .MuiDrawer-paper': openedMixin(theme),
+        }),
+        ...(!open && {
+            ...closedMixin(theme),
+            '& .MuiDrawer-paper': closedMixin(theme),
+        }),
+    })
+);
+
+interface SideBarProps {
+    open: boolean;
+    handleDrawerClose: () => void;
+    isMobile: boolean;
+}
+
+export default function SideBar({ open, handleDrawerClose, isMobile }: SideBarProps) {
     const theme = useTheme();
-    const navigation = useNavigate()
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const { mode } = useThemeMode();
 
-    function logout() {
-        dispatch(logoutUser())
-    }
     const routelist = [
         { text: "Home", icon: <HomeIcon />, path: "/" },
         { text: "User", icon: <GroupIcon />, path: "user" },
@@ -39,128 +75,55 @@ export default function SideBar({ open, handleDrawerClose }: { open: boolean, ha
         { text: "Order", icon: <ReceiptLongIcon />, path: "order" },
         { text: "Reports", icon: <BarChartIcon />, path: "reports" },
     ];
-    const openedMixin = (theme: Theme): CSSObject => ({
-        width: drawerWidth,
-        transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-        overflowX: 'hidden',
-    });
 
-    const closedMixin = (theme: Theme): CSSObject => ({
-        transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        overflowX: 'hidden',
-        width: `calc(${theme.spacing(7)} + 1px)`,
-        [theme.breakpoints.up('sm')]: {
-            width: `calc(${theme.spacing(8)} + 1px)`,
-        },
-    });
+    const logout = () => {
+        dispatch(logoutUser());
+    };
 
-    const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-        ({ theme }) => ({
-            width: drawerWidth,
-            flexShrink: 0,
-            whiteSpace: 'nowrap',
-            boxSizing: 'border-box',
-            variants: [
-                {
-                    props: ({ open }) => open,
-                    style: {
-                        ...openedMixin(theme),
-                        '& .MuiDrawer-paper': openedMixin(theme),
-                    },
-                },
-                {
-                    props: ({ open }) => !open,
-                    style: {
-                        ...closedMixin(theme),
-                        '& .MuiDrawer-paper': closedMixin(theme),
-                    },
-                },
-            ],
-        }),
-    );
-    return (
-        <Drawer variant="permanent" open={open}>
-            <DrawerHeader
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    px: 2,
-                }}
-            >
-                <img src={mode === 'dark' ? imagePaths.logo : imagePaths.lightThemeLogo} alt="Logo" width={50} height={50} color='white'/>
+    const drawerContent = (
+        <>
+            <DrawerHeader>
+                <img
+                    src={mode === 'dark' ? imagePaths.logo : imagePaths.lightThemeLogo}
+                    alt="Logo"
+                    width={50}
+                    height={50}
+                />
                 <IconButton onClick={handleDrawerClose}>
                     {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                 </IconButton>
             </DrawerHeader>
             <Divider />
-            <List sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <List  sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 {routelist.map((item) => (
                     <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
-                        <ListItemButton onClick={() => navigation(item.path)}
-                            sx={[
-                                {
-                                    minHeight: 48,
-                                    px: 2.5,
-                                },
-                                open
-                                    ? {
-                                        justifyContent: 'initial',
-                                    }
-                                    : {
-                                        justifyContent: 'center',
-                                    },
-                            ]}
+                        <ListItemButton
+                            onClick={() => {
+                                navigate(item.path);
+                                if (isMobile) handleDrawerClose();
+                            }}
+                            sx={{
+                                minHeight: 48,
+                                px: 2.5,
+                                justifyContent: open ? 'initial' : 'center',
+                            }}
                         >
                             <ListItemIcon
-                                sx={[
-                                    {
-                                        minWidth: 0,
-                                        justifyContent: 'center',
-                                    },
-                                    open
-                                        ? {
-                                            mr: 3,
-                                        }
-                                        : {
-                                            mr: 'auto',
-                                        },
-                                ]}
+                                sx={{
+                                    minWidth: 0,
+                                    mr: open ? 3 : 'auto',
+                                    justifyContent: 'center',
+                                }}
                             >
                                 {item.icon}
                             </ListItemIcon>
-                            <ListItemText
-                                primary={item
-                                    .text
-                                }
-                                sx={[
-                                    open
-                                        ? {
-                                            opacity: 1,
-                                        }
-                                        : {
-                                            opacity: 0,
-                                        },
-                                ]}
-                            />
+                            <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
                         </ListItemButton>
                     </ListItem>
                 ))}
-                <ListItem
-                    key="logout"
-                    disablePadding
-                    sx={{
-                        display: 'block',
-                        mt: 'auto', // Pushes it to the bottom
-                    }}
-                >
-                    <ListItemButton onClick={logout}
+                <ListItem key="logout" disablePadding sx={{ display: 'block', mt: 'auto' }}>
+                    <ListItemButton
+                        onClick={logout}
                         sx={{
                             minHeight: 48,
                             px: 2.5,
@@ -176,12 +139,28 @@ export default function SideBar({ open, handleDrawerClose }: { open: boolean, ha
                         >
                             <LogoutIcon />
                         </ListItemIcon>
-                        <ListItemText
-                            primary="Logout"
-                            sx={{ opacity: open ? 1 : 0 }}
-                        />
+                        <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
                     </ListItemButton>
                 </ListItem>
             </List>
-        </Drawer>)
+        </>
+    );
+
+    if (isMobile) {
+        return (
+            <MuiDrawer
+                variant="temporary"
+                open={open}
+                onClose={handleDrawerClose}
+                ModalProps={{ keepMounted: true }}
+                sx={{
+                    '& .MuiDrawer-paper': { width: drawerWidth },
+                }}
+            >
+                {drawerContent}
+            </MuiDrawer>
+        );
+    }
+
+    return <Drawer variant="permanent" open={open}>{drawerContent}</Drawer>;
 }

@@ -33,12 +33,12 @@ export default function Signup() {
 
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
     dispatch(signupUser(data)).unwrap().then(() => {
-      navigate('/')
+      navigate('/', { replace: true });
     })
   };
 
   const loginWithGoogle = () => {
-    dispatch(loginUserWithGoogle()).unwrap().then(() => navigate('/'))
+    dispatch(loginUserWithGoogle()).unwrap().then(() => navigate('/', { replace: true }))
   }
 
   return (

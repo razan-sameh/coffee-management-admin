@@ -23,11 +23,11 @@ export default function Login() {
   } = useForm<IFormInput>()
 
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    dispatch(loginUser(data)).unwrap().then(() => navigate('/'))
+    dispatch(loginUser(data)).unwrap().then(() => navigate('/', { replace: true }))
   }
 
   const loginWithGoogle = () => {
-    dispatch(loginUserWithGoogle()).unwrap().then(() => navigate('/'))
+    dispatch(loginUserWithGoogle()).unwrap().then(() => navigate('/', { replace: true }))
   }
 
   return (

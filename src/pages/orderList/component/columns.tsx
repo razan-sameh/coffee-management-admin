@@ -10,7 +10,14 @@ export const getColumns = (
         onCancel: (id: GridRowId) => () => void;
         onView: (id: GridRowId) => () => void;
     }
-): GridColDef[] => [
+): {
+    columns: GridColDef[];
+    getRowOptions: (id: GridRowId) => {
+        showDetails?: boolean;
+        showEditDelete?: boolean;
+    };
+} => {
+    const columns: GridColDef[] = [
         {
             field: "no",
             headerName: ".NO",
@@ -89,3 +96,11 @@ export const getColumns = (
                 })
         },
     ];
+
+    const getRowOptions = () => ({
+        showDetails: true,
+        showEditDelete: false,
+    });
+
+    return { columns, getRowOptions };
+};

@@ -1,6 +1,6 @@
 import { type GridColDef, type GridRowId, type GridRowModesModel } from "@mui/x-data-grid";
 import { getActions } from "../../../components/smartDataGrid/components/Actions";
-import Rating from '@mui/material/Rating';
+import Rating from "@mui/material/Rating";
 
 export const getColumns = (
     rowModesModel: GridRowModesModel,
@@ -11,7 +11,14 @@ export const getColumns = (
         onCancel: (id: GridRowId) => () => void;
         onView: (id: GridRowId) => () => void;
     }
-): GridColDef[] => [
+): {
+    columns: GridColDef[];
+    getRowOptions: (id: GridRowId) => {
+        showDetails?: boolean;
+        showEditDelete?: boolean;
+    };
+} => {
+    const columns: GridColDef[] = [
         {
             field: "no",
             headerName: ".NO",
@@ -38,7 +45,7 @@ export const getColumns = (
                 const { row } = params;
                 const imageUrl = row.image?.[0];
                 return (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         {imageUrl && (
                             <img
                                 src={imageUrl}
@@ -49,7 +56,7 @@ export const getColumns = (
                                 style={{
                                     borderRadius: 50,
                                     objectFit: "cover",
-                                    display: "block"
+                                    display: "block",
                                 }}
                             />
                         )}
@@ -90,11 +97,7 @@ export const getColumns = (
             headerAlign: "center",
             renderCell: (params) => {
                 const value = Math.round(params.value) || 0;
-                return (
-                    <>
-                        <Rating name="half-rating-read" defaultValue={value} readOnly />
-                    </>
-                );
+                return <Rating name="half-rating-read" defaultValue={value} readOnly />;
             },
         },
         {
@@ -107,7 +110,16 @@ export const getColumns = (
             getActions: ({ id }) =>
                 getActions(id, rowModesModel, {
                     ...actions,
-                    showDetails: true, // 👈 example condition
+                    showDetails: true,
+                    showEditDelete: true,
                 }),
         },
     ];
+
+    const getRowOptions = () => ({
+        showDetails: true,
+        showEditDelete: true,
+    });
+
+    return { columns, getRowOptions };
+};

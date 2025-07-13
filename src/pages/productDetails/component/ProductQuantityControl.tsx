@@ -33,7 +33,7 @@ export default function ProductQuantityControl({ productID, size }: Props) {
     };
 
     return (
-        <Box mt={3} display="flex" alignItems="center" gap={2}>
+        <Box mt={3} mb={3} display="flex" alignItems="center" gap={2}>
             <Button variant="outlined" onClick={onDecrement}>-</Button>
             <TextField
                 value={quantity}

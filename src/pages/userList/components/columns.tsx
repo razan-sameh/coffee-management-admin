@@ -6,8 +6,23 @@ import { enmRole } from "../../../content/enums";
 import EditableArrayCell from "../../../components/smartDataGrid/components/EditableArrayCell";
 import SelectableArrayCell from "../../../components/smartDataGrid/components/SelectableArrayCell";
 
-export const getColumns = (rowModesModel: GridRowModesModel, actions: { onEdit: (id: GridRowId) => () => void; onSave: (id: GridRowId) => () => void; onDelete: (id: GridRowId) => () => void; onCancel: (id: GridRowId) => () => void; }) =>
-  [
+export const getColumns = (
+  rowModesModel: GridRowModesModel,
+  actions: {
+    onEdit: (id: GridRowId) => () => void;
+    onSave: (id: GridRowId) => () => void;
+    onDelete: (id: GridRowId) => () => void;
+    onCancel: (id: GridRowId) => () => void;
+    onView?: (id: GridRowId) => () => void;
+  }
+): {
+  columns: GridColDef[];
+  getRowOptions: (id: GridRowId) => {
+    showDetails?: boolean;
+    showEditDelete?: boolean;
+  };
+} => {
+  const columns: GridColDef[] = [
     {
       field: "no",
       headerName: ".NO",
@@ -18,23 +33,36 @@ export const getColumns = (rowModesModel: GridRowModesModel, actions: { onEdit: 
       headerAlign: "center",
     },
     {
-      field: "name", headerName: "Full Name", flex: 1, editable: true, sortable: true, align: "center",
+      field: "name",
+      headerName: "Full Name",
+      flex: 1,
+      editable: true,
+      sortable: true,
+      align: "center",
       headerAlign: "center",
     },
     {
-      field: "phone", headerName: "Phone Number", flex: 1, editable: true, sortable: false, disableColumnMenu: true, align: "center",
+      field: "phone",
+      headerName: "Phone Number",
+      flex: 1,
+      editable: true,
+      sortable: false,
+      disableColumnMenu: true,
+      align: "center",
       headerAlign: "center",
       renderEditCell: (params) => (
         <EditableArrayCell
           items={params.value || []}
           onChange={(updatedItems) => {
-            params.api.setEditCellValue({ id: params.id, field: "phone", value: updatedItems });
+            params.api.setEditCellValue({
+              id: params.id,
+              field: "phone",
+              value: updatedItems,
+            });
           }}
         />
       ),
-      renderCell: (params) => (
-        <SelectableArrayCell items={params.value || []} />
-      ),
+      renderCell: (params) => <SelectableArrayCell items={params.value || []} />,
     },
     {
       field: "email",
@@ -46,23 +74,33 @@ export const getColumns = (rowModesModel: GridRowModesModel, actions: { onEdit: 
       editable: true,
       disableColumnMenu: true,
       renderEditCell: () => (
-        <Typography sx={{ color: "gray", fontStyle: "italic", alignSelf: "center" }}>Cannot edit</Typography>
+        <Typography sx={{ color: "gray", fontStyle: "italic", alignSelf: "center" }}>
+          Cannot edit
+        </Typography>
       ),
     },
     {
-      field: "address", headerName: "Address", flex: 1, editable: true, disableColumnMenu: true, sortable: false, align: "center",
+      field: "address",
+      headerName: "Address",
+      flex: 1,
+      editable: true,
+      disableColumnMenu: true,
+      sortable: false,
+      align: "center",
       headerAlign: "center",
       renderEditCell: (params) => (
         <EditableArrayCell
           items={params.value || []}
           onChange={(updatedItems) => {
-            params.api.setEditCellValue({ id: params.id, field: "address", value: updatedItems });
+            params.api.setEditCellValue({
+              id: params.id,
+              field: "address",
+              value: updatedItems,
+            });
           }}
         />
       ),
-      renderCell: (params) => (
-        <SelectableArrayCell items={params.value || []} />
-      ),
+      renderCell: (params) => <SelectableArrayCell items={params.value || []} />,
     },
     {
       field: "role",
@@ -84,6 +122,19 @@ export const getColumns = (rowModesModel: GridRowModesModel, actions: { onEdit: 
       sortable: false,
       disableColumnMenu: true,
       flex: 1,
-      getActions: ({ id }) => getActions(id, rowModesModel, actions),
+      getActions: ({ id }) =>
+        getActions(id, rowModesModel, {
+          ...actions,
+          showDetails: false,
+          showEditDelete: true,
+        }),
     },
-  ] satisfies GridColDef[];
+  ];
+
+  const getRowOptions = () => ({
+    showDetails: false,
+    showEditDelete: true,
+  });
+
+  return { columns, getRowOptions };
+};

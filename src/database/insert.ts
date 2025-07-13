@@ -1,12 +1,12 @@
 import { get, push, ref, set } from 'firebase/database';
-import type { typOrder, typProduct, typUser } from '../content/types';
+import type { typCategory, typOrder, typProduct, typUser } from '../content/types';
 import { database } from '../services/configuration'; // adjust the path
 import { getProductById } from './select';
 import { enmAddToCartMode, enmPlatform, type enmSize } from '../content/enums';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 
-export const insertUser = (user: typUser) => {    
+export const insertUser = (user: typUser) => {
     set(ref(database, `/user/${user.Uid}`), {
         Uid: user.Uid ?? '',
         firstName: user.firstName,
@@ -31,6 +31,20 @@ export async function insertProduct(product: typProduct) {
 
     await set(newRef, newProduct);
 }
+
+export async function insertCategory(category: typCategory): Promise<void> {
+    const productRef = ref(database, 'category');
+    const newRef = push(productRef); // generates a new unique key
+
+    const newProduct = {
+        ...category,
+        ID: newRef.key // optionally store the ID
+    };
+
+    await set(newRef, newProduct);
+}
+
+
 
 export const addItemToCart = async (
     uid: string,

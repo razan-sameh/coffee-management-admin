@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Box,
   Typography,
@@ -8,6 +8,7 @@ import {
   Select,
   MenuItem,
   Button,
+  InputAdornment,
 } from "@mui/material";
 import {
   type GridRowId,
@@ -16,6 +17,7 @@ import {
   type GridRenderEditCellParams,
   GridRowModes,
 } from "@mui/x-data-grid";
+import SearchIcon from "@mui/icons-material/Search";
 
 // 👇 Extend the column type to include `hideInForm`
 export type ExtendedGridColDef = {
@@ -67,6 +69,7 @@ export function MobileGridList<T extends { id: GridRowId }>({
   onAdd,
 }: Props<T>) {
   const [editedRows, setEditedRows] = useState<Record<GridRowId, Partial<T>>>({});
+  const [searchText, setSearchText] = useState("");
 
   const handleFieldChange = (id: GridRowId, field: string, value: any) => {
     setEditedRows((prev) => ({
@@ -80,7 +83,7 @@ export function MobileGridList<T extends { id: GridRowId }>({
 
   const handleSave = (id: GridRowId) => {
     const edited = editedRows[id];
-    onSave(id, edited); // calls SmartDataGrid with updatedRow
+    onSave(id, edited);
     setEditedRows((prev) => {
       const newState = { ...prev };
       delete newState[id];
@@ -88,15 +91,22 @@ export function MobileGridList<T extends { id: GridRowId }>({
     });
   };
 
-
   const handleAddClick = () => {
-    if (onAdd) {
-      onAdd(); // ✅ calls SmartDataGrid's handleAddClick
-    }
+    if (onAdd) onAdd();
   };
 
-
-
+  const filteredRows = useMemo(() => {
+    if (!searchText) return rows;
+    return rows.filter((row) =>
+      columns.some((col) => {
+        const value = (row as any)[col.field];
+        return (
+          typeof value === "string" &&
+          value.toLowerCase().includes(searchText.toLowerCase())
+        );
+      })
+    );
+  }, [rows, searchText, columns]);
 
   return (
     <Box
@@ -110,17 +120,35 @@ export function MobileGridList<T extends { id: GridRowId }>({
         backdropFilter: "blur(10px)",
       }}
     >
+      {/* Search */}
+      <TextField
+        size="small"
+        variant="outlined"
+        placeholder="Search..."
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon />
+            </InputAdornment>
+          ),
+        }}
+        sx={{ mb: 2 }}
+      />
+
       {showAdd && (
-        <Box display="flex" justifyContent="flex-end" mb={1}>
+        <Box display="flex" justifyContent="flex-end">
           <Button variant="contained" size="small" onClick={handleAddClick}>
             Add
           </Button>
         </Box>
       )}
 
-      {rows.map((row, index) => {
+      {filteredRows.map((row, index) => {
         const isEditing = rowModesModel[row.id]?.mode === GridRowModes.Edit;
         const currentEditRow = editedRows[row.id] ?? {};
+
         return (
           <Box key={row.id}>
             {columns
@@ -174,7 +202,6 @@ export function MobileGridList<T extends { id: GridRowId }>({
                         {col.valueOptions.map((option: any) => {
                           const val = typeof option === "object" ? option.value : option;
                           const label = typeof option === "object" ? option.label : option;
-
                           return (
                             <MenuItem key={val} value={val}>
                               {label}
@@ -197,10 +224,9 @@ export function MobileGridList<T extends { id: GridRowId }>({
                   }
                 } else {
                   content = col.renderCell
-                    ? col.renderCell(renderParams as unknown as GridRenderCellParams)
+                    ? col.renderCell(renderParams as unknown as GridRenderEditCellParams)
                     : <Typography variant="body2">{String(value)}</Typography>;
                 }
-
 
                 return (
                   <Box key={col.field} mt={1}>
@@ -226,7 +252,7 @@ export function MobileGridList<T extends { id: GridRowId }>({
               ))}
             </Box>
 
-            {index !== rows.length - 1 && <Divider sx={{ my: 2 }} />}
+            {index !== filteredRows.length - 1 && <Divider sx={{ my: 2 }} />}
           </Box>
         );
       })}

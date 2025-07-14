@@ -17,7 +17,7 @@ export default function CategorySelector({
             options={categories}
             getOptionLabel={(option) => option?.title ?? ''}
             value={selectedCategory}
-            onChange={(e, newValue) => setSelectedCategory(newValue)}
+            onChange={(_e, newValue) => setSelectedCategory(newValue)}
             renderInput={(params) => <TextField {...params} label="Category" fullWidth />}
         />
     );

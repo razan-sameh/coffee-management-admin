@@ -13,7 +13,7 @@ export default function ProductSizeSelector({ size, onChange }: Props) {
             <ToggleButtonGroup
                 exclusive
                 value={size}
-                onChange={(e, val) => val && onChange(val)}
+                onChange={(_e, val) => val && onChange(val)}
                 sx={{ mt: 1 }}
             >
                 {Object.values(enmSize).map((sz) => (

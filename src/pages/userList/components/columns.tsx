@@ -5,6 +5,7 @@ import { Typography } from "@mui/material";
 import { enmRole } from "../../../content/enums";
 import EditableArrayCell from "../../../components/smartDataGrid/components/EditableArrayCell";
 import SelectableArrayCell from "../../../components/smartDataGrid/components/SelectableArrayCell";
+import { ActiveCell } from "./ActiveCell";
 
 export const getColumns = (
   rowModesModel: GridRowModesModel,
@@ -33,8 +34,8 @@ export const getColumns = (
       headerAlign: "center",
     },
     {
-      field: "name",
-      headerName: "Full Name",
+      field: "firstName",
+      headerName: "First Name",
       flex: 1,
       editable: true,
       sortable: true,
@@ -42,7 +43,16 @@ export const getColumns = (
       headerAlign: "center",
     },
     {
-      field: "phone",
+      field: "lastName",
+      headerName: "Last Name",
+      flex: 1,
+      editable: true,
+      sortable: true,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "phoneNumber",
       headerName: "Phone Number",
       flex: 1,
       editable: true,
@@ -56,7 +66,7 @@ export const getColumns = (
           onChange={(updatedItems) => {
             params.api.setEditCellValue({
               id: params.id,
-              field: "phone",
+              field: "phoneNumber",
               value: updatedItems,
             });
           }}
@@ -116,6 +126,21 @@ export const getColumns = (
       renderCell: ({ row: { role } }) => <RoleCell role={role} />,
     },
     {
+      field: "isActive",
+      headerName: "Active Status",
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+      sortable: false,
+      editable: true,
+      disableColumnMenu: true,
+      type: "singleSelect",
+      valueOptions: [
+        { value: true, label: "Active" },
+        { value: false, label: "Inactive" },
+      ], renderCell: ({ row: { isActive } }) => <ActiveCell isActive={isActive} />,
+    },
+    {
       field: "actions",
       type: "actions",
       headerName: "Action",
@@ -126,14 +151,14 @@ export const getColumns = (
         getActions(id, rowModesModel, {
           ...actions,
           showDetails: false,
-          showEditDelete: true,
+          showDelete: false
         }),
     },
   ];
 
   const getRowOptions = () => ({
     showDetails: false,
-    showEditDelete: true,
+    showDelete: false,
   });
 
   return { columns, getRowOptions };

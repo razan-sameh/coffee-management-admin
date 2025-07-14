@@ -49,7 +49,8 @@ export type typUser = {
     phoneNumber: string[]
     address?: string[],
     password: string,
-    role: enmRole
+    role: enmRole,
+    isActive: boolean
 }
 
 export type typDeliveryInfo = {

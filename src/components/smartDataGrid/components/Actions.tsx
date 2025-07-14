@@ -23,7 +23,8 @@ type ActionOptions = {
     onCancel: (id: GridRowId) => () => void;
     onView?: (id: GridRowId) => () => void;
     showDetails?: boolean;
-    showEditDelete?: boolean;
+    showEdit?: boolean;
+    showDelete?: boolean;
     renderAsPlainButtons?: boolean; // 👈 New flag for mobile
 };
 
@@ -37,7 +38,8 @@ export const getActions = (
         onCancel,
         onView,
         showDetails = false,
-        showEditDelete = true,
+        showEdit = true,
+        showDelete= true,
         renderAsPlainButtons = false, // 👈 Default false (desktop)
     }: ActionOptions
 ) => {
@@ -58,9 +60,13 @@ export const getActions = (
                 <GridActionsCellItem key="view" icon={<VisibilityIcon />} label="View" onClick={onView(id)} />
             );
         }
-        if (showEditDelete) {
+        if (showEdit) {
             actions.push(
                 <GridActionsCellItem key="edit" icon={<EditIcon />} label="Edit" onClick={onEdit(id)} />,
+            );
+        }
+        if (showDelete) {
+            actions.push(
                 <GridActionsCellItem key="delete" icon={<DeleteIcon />} label="Delete" onClick={onDelete(id)} />
             );
         }
@@ -88,11 +94,15 @@ export const getActions = (
             );
         }
 
-        if (showEditDelete) {
+        if (showEdit) {
             mobileActions.push(
                 <Tooltip title="Edit" key="edit">
                     <IconButton onClick={onEdit(id)}><EditIcon /></IconButton>
-                </Tooltip>,
+                </Tooltip>
+            );
+        }
+        if (showDelete) {
+            mobileActions.push(
                 <Tooltip title="Delete" key="delete">
                     <IconButton onClick={onDelete(id)}><DeleteIcon /></IconButton>
                 </Tooltip>

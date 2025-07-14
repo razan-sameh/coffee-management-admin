@@ -111,14 +111,12 @@ export const getColumns = (
                 getActions(id, rowModesModel, {
                     ...actions,
                     showDetails: true,
-                    showEditDelete: true,
                 }),
         },
     ];
 
     const getRowOptions = () => ({
         showDetails: true,
-        showEditDelete: true,
     });
 
     return { columns, getRowOptions };

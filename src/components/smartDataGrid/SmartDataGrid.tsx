@@ -40,12 +40,13 @@ export type SmartDataGridProps<T extends { id: string | number }> = {
         columns: GridColDef[];
         getRowOptions: (id: GridRowId) => {
             showDetails?: boolean;
-            showEditDelete?: boolean;
+            showDelete?: boolean;
+            showEdit?: boolean;
         };
     };
     getData: (callback: (data: Record<string, any>) => void) => () => void;
     updateData?: (id: string | number, payload: Partial<T>) => Promise<void>;
-    deleteData: (id: string | number) => Promise<void>;
+    deleteData?: (id: string | number) => Promise<void>;
     mapRow: (id: string, item: any, index: number) => T;
     imageBackground?: string;
     slotProps?: {
@@ -143,7 +144,7 @@ export default function SmartDataGrid<T extends {
         if (!confirmed) return;
 
         try {
-            await deleteData(id);
+            if(deleteData) await deleteData(id);
             dispatchReducer({ type: "DELETE_ROW", id });
             dispatch(setToast({ message: "Deleted Successfully", severity: enmToastSeverity.success }));
         } catch (err: any) {
@@ -272,7 +273,8 @@ export default function SmartDataGrid<T extends {
                                 onDelete: (id) => () => handlers.onDelete(id),
                                 onView: handlers.onView ? (id) => () => handlers.onView!(id) : undefined,
                                 showDetails: rowOptions.showDetails,
-                                showEditDelete: rowOptions.showEditDelete,
+                                showEdit: rowOptions.showEdit,
+                                showDelete: rowOptions.showDelete,
                                 renderAsPlainButtons: true,
                             });
                         }}

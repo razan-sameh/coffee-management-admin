@@ -14,7 +14,8 @@ export const insertUser = (user: typUser) => {
         email: user.email ?? '',
         password: user.password ?? '',
         role: user.role ?? '',
-        phoneNumber: [user.phoneNumber]
+        phoneNumber: [user.phoneNumber],
+        isActive: user.isActive
     })
         .then(() => console.log('User data inserted successfully'))
         .catch(error => console.error('Error inserting user data:', error));

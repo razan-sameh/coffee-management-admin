@@ -62,7 +62,8 @@ export const signupUser = createAsyncThunk(
                 email: formData.email,
                 phoneNumber: [formData.phone],
                 password: formData.password,
-                role: formData.role,
+                role: formData.role as unknown as enmRole, // ✅ FIXED
+                isActive: true
             };
             insertUser(user);
             return user;
@@ -135,10 +136,11 @@ export const loginUserWithGoogle = createAsyncThunk(
                 phoneNumber: [],
                 password: '',
                 role: enmRole.user,
+                isActive: true
             };
 
             // Optional: You can call insertUser here if needed
-            // insertUser(userData);
+            insertUser(userData);
 
             return userData;
         } catch (error: any) {
@@ -168,6 +170,7 @@ export const loginUserWithFacebook = createAsyncThunk(
                 phoneNumber: [],
                 password: '',
                 role: enmRole.user,
+                isActive: true
             };
 
             // Optional: You can call insertUser here if needed

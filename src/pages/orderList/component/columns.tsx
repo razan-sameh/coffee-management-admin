@@ -92,14 +92,16 @@ export const getColumns = (
                 getActions(id, rowModesModel, {
                     ...actions,
                     showDetails: true,
-                    showEditDelete: false, // 👈 control this dynamically
+                    showEdit: false, // 👈 control this dynamically
+                    showDelete: false,
                 })
         },
     ];
 
     const getRowOptions = () => ({
         showDetails: true,
-        showEditDelete: false,
+        showDelete: false,
+        showEdit: false,
     });
 
     return { columns, getRowOptions };

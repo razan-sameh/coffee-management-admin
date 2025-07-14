@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles/index.css'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
+import { BrowserRouter, Route, Routes } from 'react-router'
 import Login from './pages/login/Login'
 import Signup from './pages/signup/Signup'
 import { Provider } from 'react-redux'
@@ -25,6 +25,7 @@ import CartSyncProvider from './provider/CartSyncProvider'
 import Reports from './pages/reports/Reports'
 import { FilterProvider } from './provider/FilterProvider'
 import ForgetPassword from './pages/forgetPassword/ForgetPassword'
+import Coffee404 from './pages/coffee404/Coffee404'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -58,7 +59,7 @@ createRoot(document.getElementById('root')!).render(
                       </Route>
                     </Route>
                     {/* Optionally handle 404 */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
+                    <Route path="*" element={<Coffee404 />} />
                   </Routes>
                 </ConfirmDialogProvider>
               </FilterProvider>

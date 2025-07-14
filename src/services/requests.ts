@@ -6,7 +6,7 @@ import { enmToastSeverity } from "../content/enums";
 
 export const deleteUserRequest = async (uid: string) => {
   try {
-    await axios.delete("https://coffee-server-production.up.railway.app/api/delete-user", {
+    await axios.delete("https://coffee-server-ivory-omega.vercel.app/api/delete-user", {
       data: { uid },
     });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -16,7 +16,7 @@ export const deleteUserRequest = async (uid: string) => {
 };
 export const ChangeUserSatutsRequest = async (Uid: string | number,isActive:boolean) => {
   try {
-    await axios.post("https://coffee-server-production.up.railway.app/api/set-user-disabled", {
+    await axios.post("https://coffee-server-ivory-omega.vercel.app/api/set-user-disabled", {
       uid: Uid,
       disabled: isActive === false ,
     });

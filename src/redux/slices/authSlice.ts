@@ -43,7 +43,7 @@ export const initializeAuth = createAsyncThunk(
 
                         if (userData.role === enmRole.customer || userData.isActive == false) {
                             dispatch(setToast({
-                                message: "Access denied. You will be logged out.",
+                                message: "Access denied.",
                                 severity: enmToastSeverity.error,
                             }));
                             dispatch(logoutUser());

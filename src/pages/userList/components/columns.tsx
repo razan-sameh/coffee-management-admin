@@ -6,6 +6,7 @@ import { enmRole } from "../../../content/enums";
 import EditableArrayCell from "../../../components/smartDataGrid/components/EditableArrayCell";
 import SelectableArrayCell from "../../../components/smartDataGrid/components/SelectableArrayCell";
 import { ActiveCell } from "./ActiveCell";
+import type { typPermission } from "../../../content/permissions";
 
 export const getColumns = (
   rowModesModel: GridRowModesModel,
@@ -15,7 +16,8 @@ export const getColumns = (
     onDelete: (id: GridRowId) => () => void;
     onCancel: (id: GridRowId) => () => void;
     onView?: (id: GridRowId) => () => void;
-  }
+  },
+  permissions: typPermission
 ): {
   columns: GridColDef[];
   getRowOptions: (id: GridRowId) => {
@@ -23,6 +25,7 @@ export const getColumns = (
     showEditDelete?: boolean;
   };
 } => {
+  const showActionsColumn = permissions.canAdd || permissions.canEdit || permissions.canDelete;
   const columns: GridColDef[] = [
     {
       field: "no",
@@ -140,7 +143,9 @@ export const getColumns = (
         { value: false, label: "Inactive" },
       ], renderCell: ({ row: { isActive } }) => <ActiveCell isActive={isActive} />,
     },
-    {
+  ];
+  if (showActionsColumn) {
+    columns.push({
       field: "actions",
       type: "actions",
       headerName: "Action",
@@ -153,9 +158,8 @@ export const getColumns = (
           showDetails: false,
           showDelete: false
         }),
-    },
-  ];
-
+    });
+  }
   const getRowOptions = () => ({
     showDetails: false,
     showDelete: false,

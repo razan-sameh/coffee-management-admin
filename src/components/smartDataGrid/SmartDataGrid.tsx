@@ -23,9 +23,13 @@ import { createInitialState, tableReducer } from "../../reducers/tableReducer";
 import { Outlet } from "react-router";
 import { v4 } from "uuid";
 import { useConfirmDialog } from "../../provider/ConfirmDialogProvider";
-import { MobileGridList, type ExtendedGridColDef } from "./components/MobileGridList";
 import { getActions } from "./components/Actions";
-
+import { MobileGridList } from "./components/MobileGridList/MobileGridList";
+import { useRolePermissions } from "../../hook/useRolePermissions";
+// 👇 Extend the column type to include `hideInForm`
+export type ExtendedGridColDef = GridColDef & {
+    hideInForm?: boolean;
+};
 export type SmartDataGridProps<T extends { id: string | number }> = {
     getColumns: (
         rowModesModel: GridRowModesModel,
@@ -82,6 +86,7 @@ export default function SmartDataGrid<T extends {
     const { confirm } = useConfirmDialog();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const {permissions , currentRole} = useRolePermissions();
 
     useEffect(() => {
         const unsubscribe = getData((data) => {
@@ -229,7 +234,7 @@ export default function SmartDataGrid<T extends {
                     onView: handleDetailsClick,
                 }
             ),
-        [state.rowModesModel, isMobile]
+        [state.rowModesModel, isMobile, currentRole]
     );
 
     return (
@@ -263,7 +268,7 @@ export default function SmartDataGrid<T extends {
                         onDelete={(id) => handleDeleteClick(id)()}
                         onView={(id) => handleDetailsClick(id)()}
                         showAdd={slotProps?.toolbar?.showAdd}
-                        onAdd={onAdd}
+                        onAdd={permissions.canAdd ? onAdd : undefined}
                         getActions={(id, model, handlers) => {
                             const rowOptions = getRowOptions(id);
                             return getActions(id, model, {

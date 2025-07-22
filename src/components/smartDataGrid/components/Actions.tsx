@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
     GridActionsCellItem,
     GridRowModes,
@@ -15,6 +16,7 @@ import {
     Close as CancelIcon,
     Visibility as VisibilityIcon,
 } from "@mui/icons-material";
+import { useRolePermissions } from "../../../hook/useRolePermissions";
 
 type ActionOptions = {
     onEdit: (id: GridRowId) => () => void;
@@ -44,6 +46,7 @@ export const getActions = (
     }: ActionOptions
 ) => {
     const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+    const {permissions} = useRolePermissions();
 
     // === DESKTOP ===
     if (!renderAsPlainButtons) {
@@ -60,12 +63,12 @@ export const getActions = (
                 <GridActionsCellItem key="view" icon={<VisibilityIcon />} label="View" onClick={onView(id)} />
             );
         }
-        if (showEdit) {
+        if (showEdit && permissions.canEdit) {
             actions.push(
                 <GridActionsCellItem key="edit" icon={<EditIcon />} label="Edit" onClick={onEdit(id)} />,
             );
         }
-        if (showDelete) {
+        if (showDelete && permissions.canDelete) {
             actions.push(
                 <GridActionsCellItem key="delete" icon={<DeleteIcon />} label="Delete" onClick={onDelete(id)} />
             );
@@ -94,14 +97,14 @@ export const getActions = (
             );
         }
 
-        if (showEdit) {
+        if (showEdit && permissions.canEdit) {
             mobileActions.push(
                 <Tooltip title="Edit" key="edit">
                     <IconButton onClick={onEdit(id)}><EditIcon /></IconButton>
                 </Tooltip>
             );
         }
-        if (showDelete) {
+        if (showDelete && permissions.canDelete) {
             mobileActions.push(
                 <Tooltip title="Delete" key="delete">
                     <IconButton onClick={onDelete(id)}><DeleteIcon /></IconButton>

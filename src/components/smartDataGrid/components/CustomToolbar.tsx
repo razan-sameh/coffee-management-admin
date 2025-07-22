@@ -30,6 +30,7 @@ import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import AddIcon from '@mui/icons-material/Add';
 import { styled } from "@mui/material/styles";
+import { useRolePermissions } from "../../../hook/useRolePermissions";
 
 type CustomToolbarProps = {
     title?: string; // <-- make optional
@@ -88,6 +89,7 @@ export default function CustomToolbar({
 
     const [exportMenuOpen, setExportMenuOpen] = React.useState(false);
     const exportMenuTriggerRef = React.useRef<HTMLButtonElement>(null);
+    const {permissions} = useRolePermissions();
 
     return (
         <Toolbar>
@@ -214,7 +216,7 @@ export default function CustomToolbar({
                 </StyledQuickFilter>
             )}
 
-            {showAdd && (
+            {showAdd && permissions.canAdd && (
                 <Tooltip title="Add record">
                     <ToolbarButton onClick={onAddClick}>
                         <AddIcon fontSize="small" />

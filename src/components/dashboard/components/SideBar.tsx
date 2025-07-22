@@ -18,6 +18,7 @@ import { imagePaths } from '../../../assets/imagePaths';
 import { drawerWidth } from '../DashboardLayout';
 import { useThemeMode } from '../../../provider/ThemeProvider';
 import DrawerHeader from './DrawerHeaderStyle';
+import { useRolePermissions } from '../../../hook/useRolePermissions';
 
 const openedMixin = (theme: Theme): CSSObject => ({
     width: drawerWidth,
@@ -66,14 +67,14 @@ export default function SideBar({ open, handleDrawerClose, isMobile }: SideBarPr
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const { mode } = useThemeMode();
-
+    const { permissions } = useRolePermissions();
     const routelist = [
         { text: "Home", icon: <HomeIcon />, path: "/" },
         { text: "User", icon: <GroupIcon />, path: "user" },
         { text: "Category", icon: <WidgetsIcon />, path: "category" },
         { text: "Product", icon: <LocalMallIcon />, path: "product" },
         { text: "Order", icon: <ReceiptLongIcon />, path: "order" },
-        { text: "Reports", icon: <BarChartIcon />, path: "reports" },
+        ...(permissions.canViewReports ? [{ text: "Reports", icon: <BarChartIcon />, path: "reports" }] : [])
     ];
 
     const logout = () => {
@@ -94,7 +95,7 @@ export default function SideBar({ open, handleDrawerClose, isMobile }: SideBarPr
                 </IconButton>
             </DrawerHeader>
             <Divider />
-            <List  sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <List sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 {routelist.map((item) => (
                     <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
                         <ListItemButton

@@ -3,16 +3,24 @@ import type { typCart, typCategory, typOrder, typProduct, typUser } from "../con
 import { database } from "../services/configuration";
 import type { enmSize } from "../content/enums";
 
-export const getUserInfo = (
-    Uid: string,
-    callback: (data: typUser) => void
+export const listenToUser = (
+    uid: string,
+    callback: (user: typUser) => void
 ): () => void => {
-    const userRef = ref(database, `/user/${Uid}`);
-    const listener = onValue(userRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) callback(data as typUser);
-    });
-    // Returns unsubscribe function to detach listener
+    const userRef = ref(database, `user/${uid}`);
+    const listener = onValue(
+        userRef,
+        (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                callback(data as typUser);
+            }
+        },
+        (error) => {
+            console.error("Error listening to user data:", error);
+        }
+    );
+
     return () => off(userRef, 'value', listener);
 };
 

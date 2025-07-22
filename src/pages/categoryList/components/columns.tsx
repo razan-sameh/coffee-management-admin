@@ -1,8 +1,8 @@
 import { type GridColDef, type GridRowId, type GridRowModesModel } from "@mui/x-data-grid";
 import { getActions } from "../../../components/smartDataGrid/components/Actions";
-export type ExtendedGridColDef = GridColDef & {
-    hideInForm?: boolean;
-};
+import type { ExtendedGridColDef } from "../../../components/smartDataGrid/SmartDataGrid";
+import type { typPermission } from "../../../content/permissions";
+
 export const getColumns = (
     rowModesModel: GridRowModesModel,
     actions: {
@@ -11,7 +11,8 @@ export const getColumns = (
         onDelete: (id: GridRowId) => () => void;
         onCancel: (id: GridRowId) => () => void;
         onView?: (id: GridRowId) => () => void;
-    }
+    },
+    permissions: typPermission
 ): {
     columns: GridColDef[];
     getRowOptions: (id: GridRowId) => {
@@ -19,6 +20,7 @@ export const getColumns = (
         showEditDelete?: boolean;
     };
 } => {
+    const showActionsColumn = permissions.canAdd || permissions.canEdit || permissions.canDelete;
     const columns: ExtendedGridColDef[] = [
         {
             field: "no",
@@ -39,7 +41,9 @@ export const getColumns = (
             align: "center",
             headerAlign: "center",
         },
-        {
+    ];
+    if (showActionsColumn) {
+        columns.push({
             field: "actions",
             type: "actions",
             headerName: "Action",
@@ -47,9 +51,8 @@ export const getColumns = (
             disableColumnMenu: true,
             flex: 1,
             getActions: ({ id }) => getActions(id, rowModesModel, actions),
-        },
-    ];
-
+        });
+    }
     const getRowOptions = () => ({
         showDetails: false,
         showEditDelete: true,

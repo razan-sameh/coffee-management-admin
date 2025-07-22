@@ -12,10 +12,12 @@ import { v4 } from 'uuid';
 import { setToast } from '../../redux/slices/toastSlice'
 import { enmToastSeverity } from '../../content/enums'
 import { useDispatch } from 'react-redux'
+import { useRolePermissions } from '../../hook/useRolePermissions'
 
 export default function CategoryList() {
     const [modalOpen, setModalOpen] = useState(false);
     const dispatch = useDispatch();
+    const { permissions } = useRolePermissions();
 
     const handleAddCategory = (name: string) => {
         const newCategory: typCategory = {
@@ -35,7 +37,10 @@ export default function CategoryList() {
     return (
         <>
             <SmartDataGrid<{ id: string; title: string }>
-                getColumns={getColumns}
+                getColumns={(
+                    rowModesModel,
+                    actions
+                ) => getColumns(rowModesModel, actions, permissions)}
                 getData={getAllCategories}
                 updateData={updateCategoryTitle}
                 deleteData={deleteCategoryById}

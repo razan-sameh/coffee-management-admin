@@ -7,7 +7,7 @@ import { ChangeUserSatutsRequest } from "../services/requests";
 export const updateUserInfo = async (
     Uid: string | number,
     updatedData: Partial<typUser>
-): Promise<void> => {
+): Promise<typUser> => {
     const userRef = ref(database, `/user/${Uid}`);
 
     //  Step 1: Fetch current data to compare
@@ -37,6 +37,8 @@ export const updateUserInfo = async (
         // 👇 Call your Express backend
         await ChangeUserSatutsRequest(Uid, updatedData.isActive!)
     }
+        return { ...existingData, ...cleanData };
+
 };
 
 export const updateCategoryTitle = (

@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { imagePaths } from '../assets/imagePaths';
 import { Box, useTheme } from '@mui/material';
 import { useAppDispatch } from '../redux/store';
-import { initializeAuth } from '../redux/slices/authSlice';
+import { initializeAuth, logoutUser, setUser } from '../redux/slices/authSlice';
+import type { typUser } from '../content/types';
+import { listenToUser } from '../database/select';
+import { enmRole, enmToastSeverity } from '../content/enums';
+import { setToast } from '../redux/slices/toastSlice';
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const dispatch = useAppDispatch();
@@ -10,18 +14,36 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     const theme = useTheme();
 
     useEffect(() => {
+        let unsubscribe: (() => void) | null = null;
         dispatch(initializeAuth())
             .unwrap()
             .then((userData) => {
-                setLoading(false)
-                console.log('User data from initializeAuth:', userData);
-                // userData is of type: typUser | null
+                if (userData) {
+                    unsubscribe = listenToUser(userData.Uid, (updatedUser: typUser) => {
+                        if (updatedUser.role === enmRole.customer || updatedUser.isActive == false) {
+                            dispatch(setToast({
+                                message: "Access denied.",
+                                severity: enmToastSeverity.error,
+                            }));
+                            dispatch(logoutUser());
+                            return;
+                        }
+
+                        dispatch(setUser(updatedUser));
+                    });
+                }
+
+                setLoading(false);
             })
             .catch((error) => {
                 console.error('Failed to initialize auth:', error);
                 setLoading(false);
             });
-    }, []);
+
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, [dispatch]);
 
     if (loading) {
         return (

@@ -5,7 +5,7 @@ import app, { faceBookprovider, googleProvider } from '../../services/configurat
 import { insertUser } from '../../database/insert';
 import type { typUser } from '../../content/types';
 import { enmRole, enmToastSeverity } from '../../content/enums';
-import { getUserInfo } from '../../database/select';
+import { listenToUser } from '../../database/select';
 import { setToast } from './toastSlice';
 
 interface AuthState {
@@ -33,13 +33,24 @@ const auth = getAuth(app);
 //initializeAuth
 export const initializeAuth = createAsyncThunk(
     'auth/initializeAuth',
-    async () => {
+    async (_, { dispatch }) => {
         return new Promise<typUser | null>((resolve) => {
             const unsubscribe = onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    getUserInfo(user.uid, (userData: typUser) => {
-                        unsubscribe(); // stop listening to auth
-                        resolve(userData);
+                    const stopListening = listenToUser(user.uid, (userData: typUser) => {
+                        unsubscribe(); // stop Firebase auth listener
+                        stopListening(); // stop user DB listener
+
+                        if (userData.role === enmRole.customer || userData.isActive == false) {
+                            dispatch(setToast({
+                                message: "Access denied. You will be logged out.",
+                                severity: enmToastSeverity.error,
+                            }));
+                            dispatch(logoutUser());
+                            resolve(null);
+                        } else {
+                            resolve(userData);
+                        }
                     });
                 } else {
                     resolve(null);
@@ -95,26 +106,40 @@ export const loginUser = createAsyncThunk(
         try {
             const res = await signInWithEmailAndPassword(auth, formData.email, formData.password);
 
-            const userData: typUser | null = await new Promise((resolve) => {
-                getUserInfo(res.user.uid, (user) => {
-                    resolve(user);
+            const userData: typUser | null = await new Promise((resolve, reject) => {
+                const unsubscribe = listenToUser(res.user.uid, (user) => {
+                    if (user.role === enmRole.customer || user.isActive == false) {
+                        dispatch(setToast({
+                            message: "Access denied.",
+                            severity: enmToastSeverity.error,
+                        }));
+                        unsubscribe(); // Stop listening immediately
+                        reject(new Error('customer-not-allowed'));
+                    } else {
+                        unsubscribe(); // Stop listening once user is fetched
+                        resolve(user);
+                    }
                 });
             });
 
             return userData;
         } catch (error: any) {
-            if (error.code === 'auth/invalid-credential') {
+            const errorCode = error?.message === 'customer-not-allowed' ? 'auth/customer-not-allowed' : error.code;
+
+            if (errorCode === 'auth/invalid-credential') {
                 dispatch(setToast({
                     message: 'The account or password is not correct!',
                     severity: enmToastSeverity.error,
                 }));
+            } else if (errorCode === 'auth/customer-not-allowed') {
+                // Already handled above, no extra toast needed
             } else {
                 dispatch(setToast({
                     message: `Authentication failed: ${error.message}`,
                     severity: enmToastSeverity.error,
                 }));
             }
-            return rejectWithValue(error.code);
+            return rejectWithValue(errorCode);
         }
     }
 );
@@ -126,31 +151,41 @@ export const loginUserWithGoogle = createAsyncThunk(
     async (_, { rejectWithValue, dispatch }) => {
         try {
             const res = await signInWithPopup(auth, googleProvider);
-            const user = res.user;
 
-            const userData: typUser = {
-                Uid: user.uid,
-                email: user.email || '',
-                firstName: '',
-                lastName: '',
-                phoneNumber: [],
-                password: '',
-                role: enmRole.user,
-                isActive: true
-            };
-
-            // Optional: You can call insertUser here if needed
-            insertUser(userData);
+            const userData: typUser | null = await new Promise((resolve, reject) => {
+                const unsubscribe = listenToUser(res.user.uid, (user) => {
+                    if (user.role === enmRole.customer || user.isActive == false) {
+                        dispatch(setToast({
+                            message: "Access denied.",
+                            severity: enmToastSeverity.error,
+                        }));
+                        unsubscribe(); // Stop listening immediately
+                        reject(new Error('customer-not-allowed'));
+                    } else {
+                        unsubscribe(); // Stop listening once user is fetched
+                        resolve(user);
+                    }
+                });
+            });
 
             return userData;
         } catch (error: any) {
-            dispatch(
-                setToast({
+            const errorCode = error?.message === 'customer-not-allowed' ? 'auth/customer-not-allowed' : error.code;
+
+            if (errorCode === 'auth/invalid-credential') {
+                dispatch(setToast({
+                    message: 'The account or password is not correct!',
+                    severity: enmToastSeverity.error,
+                }));
+            } else if (errorCode === 'auth/customer-not-allowed') {
+                // Already handled above, no extra toast needed
+            } else {
+                dispatch(setToast({
                     message: `Authentication failed: ${error.message}`,
                     severity: enmToastSeverity.error,
-                })
-            );
-            return rejectWithValue(error.message);
+                }));
+            }
+            return rejectWithValue(errorCode);
         }
     }
 );
@@ -160,31 +195,41 @@ export const loginUserWithFacebook = createAsyncThunk(
     async (_, { rejectWithValue, dispatch }) => {
         try {
             const res = await signInWithPopup(auth, faceBookprovider);
-            const user = res.user;
-
-            const userData: typUser = {
-                Uid: user.uid,
-                email: user.email || '',
-                firstName: '',
-                lastName: '',
-                phoneNumber: [],
-                password: '',
-                role: enmRole.user,
-                isActive: true
-            };
-
-            // Optional: You can call insertUser here if needed
-            // insertUser(userData);
+            const userData: typUser | null = await new Promise((resolve, reject) => {
+                const unsubscribe = listenToUser(res.user.uid, (user) => {
+                    if (user.role === enmRole.customer || user.isActive == false) {
+                        dispatch(setToast({
+                            message: "Access denied.",
+                            severity: enmToastSeverity.error,
+                        }));
+                        unsubscribe(); // Stop listening immediately
+                        reject(new Error('customer-not-allowed'));
+                    } else {
+                        unsubscribe(); // Stop listening once user is fetched
+                        resolve(user);
+                    }
+                });
+            });
 
             return userData;
         } catch (error: any) {
-            dispatch(
-                setToast({
+            const errorCode = error?.message === 'customer-not-allowed' ? 'auth/customer-not-allowed' : error.code;
+
+            if (errorCode === 'auth/invalid-credential') {
+                dispatch(setToast({
+                    message: 'The account or password is not correct!',
+                    severity: enmToastSeverity.error,
+                }));
+            } else if (errorCode === 'auth/customer-not-allowed') {
+                // Already handled above, no extra toast needed
+            } else {
+                dispatch(setToast({
                     message: `Authentication failed: ${error.message}`,
                     severity: enmToastSeverity.error,
-                })
-            );
-            return rejectWithValue(error.message);
+                }));
+            }
+
+            return rejectWithValue(errorCode);
         }
     }
 );
@@ -214,6 +259,7 @@ export const sendResetPasswordEmail = createAsyncThunk(
 // Logout
 export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { dispatch }) => {
     try {
+        dispatch(setUser(null));
         await signOut(auth);
         return true; // add this
     } catch (error: any) {
@@ -232,6 +278,9 @@ const authSlice = createSlice({
     reducers: {
         clearError(state) {
             state.error = null;
+        },
+        setUser(state, action) {
+            state.user = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -315,5 +364,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearError, setUser } = authSlice.actions;
 export default authSlice.reducer;

@@ -85,7 +85,7 @@ export default function SideBar({ open, handleDrawerClose, isMobile }: SideBarPr
         <>
             <DrawerHeader>
                 <img
-                    src={mode === 'dark' ? imagePaths.logo : imagePaths.lightThemeLogo}
+                    src={mode === 'dark' ? imagePaths.darkThemeLogo : imagePaths.lightThemeLogo}
                     alt="Logo"
                     width={50}
                     height={50}

@@ -6,8 +6,8 @@ export const deleteUserByUid = async (id: string | number): Promise<void> => {
     try {
         const uid = String(id); // Ensure it's a string for Firebase path
         await deleteUserRequest(uid); // Send request to auth service or backend
-        // const userRef = ref(database, `user/${uid}`);
-        // await remove(userRef);
+        const userRef = ref(database, `user/${uid}`);
+        await remove(userRef);
     } catch (error) {
         console.error("Failed to delete user:", error);
         throw error;

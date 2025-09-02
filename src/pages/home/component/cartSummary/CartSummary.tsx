@@ -118,7 +118,7 @@ const onSubmit = (data: DeliveryFormInputs) => {
   }
 
   // ✅ Build typOrder (without id)
-  const orderPayload = {
+  const orderPayload  = {
     userId: uid,
     items: cartItems.map(({ productID, size, count, price }) => ({
       productID,
@@ -126,7 +126,7 @@ const onSubmit = (data: DeliveryFormInputs) => {
       count,
       price,
     })),
-    total,
+    SubTotal:total,
     paymentMethod,
     orderType,
     deliveryInfo: isDelivery ? data : null,

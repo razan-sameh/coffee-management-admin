@@ -1,4 +1,8 @@
-import { type GridColDef, type GridRowId, type GridRowModesModel } from "@mui/x-data-grid";
+import {
+  type GridColDef,
+  type GridRowId,
+  type GridRowModesModel,
+} from "@mui/x-data-grid";
 import { RoleCell } from "./RoleCell";
 import { getActions } from "../../../components/smartDataGrid/components/Actions";
 import { Typography } from "@mui/material";
@@ -7,6 +11,7 @@ import EditableArrayCell from "../../../components/smartDataGrid/components/Edit
 import SelectableArrayCell from "../../../components/smartDataGrid/components/SelectableArrayCell";
 import { ActiveCell } from "./ActiveCell";
 import type { typPermission } from "../../../content/permissions";
+import type { typLocation, typPhone } from "../../../content/types";
 
 export const getColumns = (
   rowModesModel: GridRowModesModel,
@@ -25,7 +30,8 @@ export const getColumns = (
     showEditDelete?: boolean;
   };
 } => {
-  const showActionsColumn = permissions.canAdd || permissions.canEdit || permissions.canDelete;
+  const showActionsColumn =
+    permissions.canAdd || permissions.canEdit || permissions.canDelete;
   const columns: GridColDef[] = [
     {
       field: "no",
@@ -65,17 +71,35 @@ export const getColumns = (
       headerAlign: "center",
       renderEditCell: (params) => (
         <EditableArrayCell
-          items={params.value || []}
+          items={(params.value || []).map(
+            (phone: typPhone) => `${phone.countryCode} ${phone.number}`
+          )}
           onChange={(updatedItems) => {
+            // رجعهم بنفس الشكل الأصلي لو محتاج تخزنهم objects
+            const mappedBack = updatedItems.map((item) => {
+              const [countryCode, ...rest] = item.split(" ");
+              return {
+                countryCode,
+                number: rest.join(" "),
+                countryISO: "", // حط القيمة اللي عندك
+              };
+            });
+
             params.api.setEditCellValue({
               id: params.id,
               field: "phoneNumber",
-              value: updatedItems,
+              value: mappedBack,
             });
           }}
         />
       ),
-      renderCell: (params) => <SelectableArrayCell items={params.value || []} />,
+      renderCell: (params) => (
+        <SelectableArrayCell
+          items={(params.value || []).map(
+            (phone: typPhone) => `${phone.countryCode} ${phone.number}`
+          )}
+        />
+      ),
     },
     {
       field: "email",
@@ -87,7 +111,9 @@ export const getColumns = (
       editable: true,
       disableColumnMenu: true,
       renderEditCell: () => (
-        <Typography sx={{ color: "gray", fontStyle: "italic", alignSelf: "center" }}>
+        <Typography
+          sx={{ color: "gray", fontStyle: "italic", alignSelf: "center" }}
+        >
           Cannot edit
         </Typography>
       ),
@@ -103,17 +129,40 @@ export const getColumns = (
       headerAlign: "center",
       renderEditCell: (params) => (
         <EditableArrayCell
-          items={params.value || []}
+          items={(params.value || []).map((loc: typLocation) =>
+            loc?.address
+              ? `${loc.address.road ?? ""}, ${loc.address.city ?? ""}`
+              : "N/A"
+          )}
           onChange={(updatedItems) => {
+            // رجعهم تاني objects زي الـ typLocation
+            const mappedBack = updatedItems.map((item) => {
+              const [road, ...rest] = item.split(",");
+              return {
+                address: {
+                  road: road?.trim() ?? "",
+                  city: rest.join(",").trim() ?? "",
+                },
+              } as typLocation;
+            });
+
             params.api.setEditCellValue({
               id: params.id,
               field: "address",
-              value: updatedItems,
+              value: mappedBack,
             });
           }}
         />
       ),
-      renderCell: (params) => <SelectableArrayCell items={params.value || []} />,
+      renderCell: (params) => (
+        <SelectableArrayCell
+          items={(params.value || []).map((loc: typLocation) =>
+            loc?.address
+              ? `${loc.address.road ?? ""}, ${loc.address.city ?? ""}`
+              : "N/A"
+          )}
+        />
+      ),
     },
     {
       field: "role",
@@ -125,7 +174,12 @@ export const getColumns = (
       editable: true,
       disableColumnMenu: true,
       type: "singleSelect",
-      valueOptions: [enmRole.manager, enmRole.admin, enmRole.user, enmRole.customer],
+      valueOptions: [
+        enmRole.manager,
+        enmRole.admin,
+        enmRole.user,
+        enmRole.customer,
+      ],
       renderCell: ({ row: { role } }) => <RoleCell role={role} />,
     },
     {
@@ -141,7 +195,8 @@ export const getColumns = (
       valueOptions: [
         { value: true, label: "Active" },
         { value: false, label: "Inactive" },
-      ], renderCell: ({ row: { isActive } }) => <ActiveCell isActive={isActive} />,
+      ],
+      renderCell: ({ row: { isActive } }) => <ActiveCell isActive={isActive} />,
     },
   ];
   if (showActionsColumn) {
@@ -156,13 +211,13 @@ export const getColumns = (
         getActions(id, rowModesModel, {
           ...actions,
           showDetails: false,
-          showDelete: false
+          showDelete: true,
         }),
     });
   }
   const getRowOptions = () => ({
     showDetails: false,
-    showDelete: false,
+    showDelete: true,
   });
 
   return { columns, getRowOptions };

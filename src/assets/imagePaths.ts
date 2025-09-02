@@ -1,6 +1,7 @@
 import logo from '../assets/images/LogoWithoutBG.png';
 import CupCoffee from '../assets/images/CupCoffee.png';
 import lightThemeLogo from '../assets/images/lightThemeLogo.png';
+import darkThemeLogo from '../assets/images/darkThemeLogo.png';
 import beans from '../assets/images/Vector.png';
 import coffee2 from '../assets/images/Mask group (2).png';
 import coffee1 from '../assets/images/Mask group (1).png';
@@ -14,6 +15,7 @@ export const imagePaths = {
     logo,
     CupCoffee,
     lightThemeLogo,
+    darkThemeLogo,
     beans,
     coffee1,
     coffee2,

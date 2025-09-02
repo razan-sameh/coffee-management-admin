@@ -1,16 +1,12 @@
 import { Stack, TextField, useTheme } from '@mui/material';
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { phoneRegExp } from '../../../../../utils/RegExp';
+import type { typDeliveryInfo } from '../../../../../content/types';
 
-interface DeliveryFormInputs {
-    name: string;
-    phone: string;
-    address: string;
-}
 
 interface Props {
-    register: UseFormRegister<DeliveryFormInputs>;
-    errors: FieldErrors<DeliveryFormInputs>;
+    register: UseFormRegister<typDeliveryInfo>;
+    errors: FieldErrors<typDeliveryInfo>;
 }
 
 export default function DeliveryForm({ register, errors }: Props) {

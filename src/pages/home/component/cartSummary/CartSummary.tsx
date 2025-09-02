@@ -5,49 +5,39 @@ import {
   Switch,
   FormControlLabel,
   useTheme,
-} from '@mui/material';
-import {  useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
+} from "@mui/material";
+import { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
 import {
   placeOrder,
   removeFromCart as removeFromCartRedux,
-} from '../../../../redux/slices/cartSlice';
-import {
-  deleteCartItem,
-} from '../../../../database/delete';
+} from "../../../../redux/slices/cartSlice";
+import { deleteCartItem } from "../../../../database/delete";
 import {
   enmOrderType,
   enmPaymentMethod,
   enmSize,
   enmToastSeverity,
-} from '../../../../content/enums';
-import { setToast } from '../../../../redux/slices/toastSlice';
-import CartHeader from './component/CartHeader';
-import CartItem from './component/CartItem';
-import CartTotal from './component/CartTotal';
-import DeliveryForm from './component/DeliveryForm';
-import PaymentMethodSelector from './component/PaymentMethodSelector';
-import { useAppDispatch, type RootState } from '../../../../redux/store';
-import type { typProduct } from '../../../../content/types';
-
-interface DeliveryFormInputs {
-  name: string;
-  phone: string;
-  address: string;
-}
+} from "../../../../content/enums";
+import { setToast } from "../../../../redux/slices/toastSlice";
+import CartHeader from "./component/CartHeader";
+import CartItem from "./component/CartItem";
+import CartTotal from "./component/CartTotal";
+import DeliveryForm from "./component/DeliveryForm";
+import PaymentMethodSelector from "./component/PaymentMethodSelector";
+import { useAppDispatch, type RootState } from "../../../../redux/store";
+import type { typDeliveryInfo, typProduct } from "../../../../content/types";
 
 export default function CartSummary() {
   const theme = useTheme();
   const dispatch = useDispatch();
-    const appDispatch = useAppDispatch();
+  const appDispatch = useAppDispatch();
   const uid = useSelector((state: RootState) => state.auth.user?.Uid);
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const products = useSelector((state: RootState) => state.cart.products);
   // const [products, setProducts] = useState<Record<string, typProduct>>({});
-  const [orderType, setOrderType] = useState<enmOrderType>(
-    enmOrderType.dineIn
-  );
+  const [orderType, setOrderType] = useState<enmOrderType>(enmOrderType.dineIn);
   const [paymentMethod, setPaymentMethod] = useState<enmPaymentMethod>(
     enmPaymentMethod.cash
   );
@@ -57,14 +47,25 @@ export default function CartSummary() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<DeliveryFormInputs>({
+  } = useForm<typDeliveryInfo>({
     defaultValues: {
-      name: '',
-      phone: '',
-      address: '',
+      name: "",
+      phone: {
+        countryCode: "+20",
+        countryISO: "EG",
+        number: "",
+      },
+      address: {
+        latitude: 0,
+        longitude: 0,
+        address: {
+          road: "",
+          city: "",
+          country: "",
+        },
+      },
     },
   });
-
 
   // ✅ useMemo to optimize product lookup
   const productMap = useMemo(() => {
@@ -87,54 +88,56 @@ export default function CartSummary() {
     [cartItems]
   );
 
-const onSubmit = (data: DeliveryFormInputs) => {
-  if (!uid) return;
+  const onSubmit = (data: typDeliveryInfo) => {
+    if (!uid) return;
 
-  if (cartItems.length === 0) {
-    dispatch(
-      setToast({
-        message: 'Cart is empty.',
-        severity: enmToastSeverity.warning,
-      })
-    );
-    return;
-  }
-
-  const isDelivery = orderType === enmOrderType.delivery;
-
-  if (isDelivery) {
-    const hasErrors =
-      !data.name?.trim() || !data.phone?.trim() || !data.address?.trim();
-
-    if (hasErrors) {
+    if (cartItems.length === 0) {
       dispatch(
         setToast({
-          message: 'Please fill in all delivery fields correctly.',
+          message: "Cart is empty.",
           severity: enmToastSeverity.warning,
         })
       );
       return;
     }
-  }
 
-  // ✅ Build typOrder (without id)
-  const orderPayload  = {
-    userId: uid,
-    items: cartItems.map(({ productID, size, count, price }) => ({
-      productID,
-      size,
-      count,
-      price,
-    })),
-    SubTotal:total,
-    paymentMethod,
-    orderType,
-    deliveryInfo: isDelivery ? data : null,
+    const isDelivery = orderType === enmOrderType.delivery;
+
+    if (isDelivery) {
+      const hasErrors =
+        !data.name?.trim() ||
+        !data.phone?.number?.trim() || // ✅ check phone.number
+        !data.address?.address?.road?.trim(); // ✅ check address.address.road
+
+      if (hasErrors) {
+        dispatch(
+          setToast({
+            message: "Please fill in all delivery fields correctly.",
+            severity: enmToastSeverity.warning,
+          })
+        );
+        return;
+      }
+    }
+
+    // ✅ Build typOrder (without id)
+    const orderPayload = {
+      userId: uid,
+      items: cartItems.map(({ productID, size, count, price }) => ({
+        productID,
+        size,
+        count,
+        price,
+      })),
+      SubTotal: total,
+      paymentMethod,
+      orderType,
+      deliveryInfo: isDelivery ? data : null,
+    };
+
+    appDispatch(placeOrder(orderPayload)); // ⬅️ thunk handles DB + clearing cart
+    reset();
   };
-
-  appDispatch(placeOrder(orderPayload)); // ⬅️ thunk handles DB + clearing cart
-  reset();
-};
 
   return (
     <Box

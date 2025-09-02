@@ -32,4 +32,10 @@ export const rolePermissions: Record<enmRole, typPermission> = {
         canDelete: false,
         canViewReports: false,
     },
+    [enmRole.driver]: {
+        canAdd: false,
+        canEdit: false,
+        canDelete: false,
+        canViewReports: false
+    }
 };

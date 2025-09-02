@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
 import app, { faceBookprovider, googleProvider } from '../../services/configuration';
 import { insertUser } from '../../database/insert';
-import type { typUser } from '../../content/types';
+import type { typPhone, typUser } from '../../content/types';
 import { enmRole, enmToastSeverity } from '../../content/enums';
 import { listenToUser } from '../../database/select';
 import { setToast } from './toastSlice';
@@ -25,7 +25,7 @@ interface ISignupFormInput {
     lastName: string,
     email: string,
     password: string,
-    phone: string,
+    phone: typPhone;
     role: { label: string; value: string }
 }
 const auth = getAuth(app);

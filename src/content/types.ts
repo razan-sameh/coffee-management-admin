@@ -20,8 +20,8 @@ export type typProduct = {
   description: string;
   image: string[];
   rate: number;
-  rateCount: number;
-  rateSum: number;
+  rateCount?: number;
+  rateSum?: number;
 };
 export type typCart = {
   Uid: string;

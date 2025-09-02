@@ -7,13 +7,14 @@ import { enmRole } from '../../content/enums'
 import { phoneRegExp, regEmail, regPassword } from '../../utils/RegExp'
 import AuthLayout from '../../components/AuthLayout'
 import { useNavigate } from 'react-router'
+import type { typPhone } from '../../content/types'
 
 interface IFormInput {
     firstName: string,
     lastName: string,
     email: string,
     password: string,
-    phone: string,
+    phone: typPhone;
   role: { label: string; value: string }
 }
 

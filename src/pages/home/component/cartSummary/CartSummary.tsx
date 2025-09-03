@@ -64,7 +64,7 @@ export default function CartSummary() {
           road: "",
           city: "",
           country: "",
-          house_number: ""
+          house_number: "",
         },
       },
     },
@@ -180,10 +180,18 @@ export default function CartSummary() {
       ))}
 
       <Divider sx={{ my: 2 }} />
-      <CartTotal total={total} />
+      <CartTotal
+        total={total}
+        isDelivery={orderType === enmOrderType.delivery}
+      />
 
       {orderType === enmOrderType.delivery && (
-        <DeliveryForm register={register} errors={errors} setValue={setValue} watch={watch}/>
+        <DeliveryForm
+          register={register}
+          errors={errors}
+          setValue={setValue}
+          watch={watch}
+        />
       )}
 
       <PaymentMethodSelector

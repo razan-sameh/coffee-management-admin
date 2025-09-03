@@ -7,11 +7,12 @@ import { RoleCell } from "./RoleCell";
 import { getActions } from "../../../components/smartDataGrid/components/Actions";
 import { Typography } from "@mui/material";
 import { enmRole } from "../../../content/enums";
-import EditableArrayCell from "../../../components/smartDataGrid/components/EditableArrayCell";
 import SelectableArrayCell from "../../../components/smartDataGrid/components/SelectableArrayCell";
 import { ActiveCell } from "./ActiveCell";
 import type { typPermission } from "../../../content/permissions";
 import type { typLocation, typPhone } from "../../../content/types";
+import EditablePhoneArrayCell from "../../../components/smartDataGrid/components/EditablePhoneArrayCell";
+import EditableAddressArrayCell from "../../../components/smartDataGrid/components/EditableAddressArrayCell";
 
 export const getColumns = (
   rowModesModel: GridRowModesModel,
@@ -70,25 +71,13 @@ export const getColumns = (
       align: "center",
       headerAlign: "center",
       renderEditCell: (params) => (
-        <EditableArrayCell
-          items={(params.value || []).map(
-            (phone: typPhone) => `${phone.countryCode} ${phone.number}`
-          )}
+        <EditablePhoneArrayCell
+          items={params.value || []}
           onChange={(updatedItems) => {
-            // رجعهم بنفس الشكل الأصلي لو محتاج تخزنهم objects
-            const mappedBack = updatedItems.map((item) => {
-              const [countryCode, ...rest] = item.split(" ");
-              return {
-                countryCode,
-                number: rest.join(" "),
-                countryISO: "", // حط القيمة اللي عندك
-              };
-            });
-
             params.api.setEditCellValue({
               id: params.id,
               field: "phoneNumber",
-              value: mappedBack,
+              value: updatedItems,
             });
           }}
         />
@@ -128,28 +117,13 @@ export const getColumns = (
       align: "center",
       headerAlign: "center",
       renderEditCell: (params) => (
-        <EditableArrayCell
-          items={(params.value || []).map((loc: typLocation) =>
-            loc?.address
-              ? `${loc.address.road ?? ""}, ${loc.address.city ?? ""}`
-              : "N/A"
-          )}
+        <EditableAddressArrayCell
+          items={params.value || []}
           onChange={(updatedItems) => {
-            // رجعهم تاني objects زي الـ typLocation
-            const mappedBack = updatedItems.map((item) => {
-              const [road, ...rest] = item.split(",");
-              return {
-                address: {
-                  road: road?.trim() ?? "",
-                  city: rest.join(",").trim() ?? "",
-                },
-              } as typLocation;
-            });
-
             params.api.setEditCellValue({
               id: params.id,
               field: "address",
-              value: mappedBack,
+              value: updatedItems,
             });
           }}
         />
@@ -158,7 +132,9 @@ export const getColumns = (
         <SelectableArrayCell
           items={(params.value || []).map((loc: typLocation) =>
             loc?.address
-              ? `${loc.address.road ?? ""}, ${loc.address.city ?? ""}`
+              ? `${loc.address.house_number ?? ""} ${loc.address.road ?? ""}, ${
+                  loc.address.city ?? ""
+                }, ${loc.address.country ?? ""}`
               : "N/A"
           )}
         />

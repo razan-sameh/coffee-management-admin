@@ -2,8 +2,8 @@ import { Grid, Typography, Stack } from "@mui/material";
 import type { typOrder } from "../../../content/types";
 
 export const DeliveryInfo = ({ info }: { info: typOrder["deliveryInfo"] }) => (
-  <Grid size={12}>
-    <Typography variant="body2" color="textSecondary" mb={1}>
+  <Grid size={12} >
+    <Typography variant="body2" color="textSecondary" mt={1}>
       Delivery Info
     </Typography>
     <Stack spacing={0.5}>

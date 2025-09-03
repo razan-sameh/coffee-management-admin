@@ -73,7 +73,7 @@ export default function OrderDetails() {
         <OrderItemCard key={idx} item={item} product={products[item.productID]} />
       ))}
 
-      <OrderSummary total={order.total} />
+      <OrderSummary order={order} />
     </Box>
   );
 }

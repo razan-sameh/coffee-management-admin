@@ -6,21 +6,40 @@ import { enmToastSeverity } from "../content/enums";
 
 export const deleteUserRequest = async (uid: string) => {
   try {
-    await axios.delete("https://coffee-server-ivory-omega.vercel.app/api/delete-user", {
-      data: { uid },
-    });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await axios.delete(
+      "https://coffee-server-ivory-omega.vercel.app/api/delete-user",
+      {
+        data: { uid },
+      }
+    );
   } catch (err: any) {
-      store.dispatch(setToast({ message: `Delete failed: ${err.message}`, severity: enmToastSeverity.error }));
+    store.dispatch(
+      setToast({
+        message: `Delete failed: ${err.message}`,
+        severity: enmToastSeverity.error,
+      })
+    );
   }
 };
-export const ChangeUserSatutsRequest = async (Uid: string | number,isActive:boolean) => {
+export const ChangeUserSatutsRequest = async (
+  Uid: string | number,
+  isActive: boolean
+) => {
   try {
-    await axios.post("https://coffee-server-ivory-omega.vercel.app/api/set-user-disabled", {
-      uid: Uid,
-      disabled: isActive === false ,
-    });
+    const response = await axios.post(
+      "https://coffee-server-ivory-omega.vercel.app/api/set-user-disabled",
+      {
+        uid: Uid,
+        disabled: isActive === false,
+      }
+    );
+    console.log("Status change response:", response.data);
   } catch (err: any) {
-      store.dispatch(setToast({ message: `Delete failed: ${err.message}`, severity: enmToastSeverity.error }));
+    store.dispatch(
+      setToast({
+        message: `Delete failed: ${err.message}`,
+        severity: enmToastSeverity.error,
+      })
+    );
   }
 };

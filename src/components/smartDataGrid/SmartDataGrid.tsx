@@ -64,6 +64,8 @@ export type SmartDataGridProps<T extends { id: string | number }> = {
 };
 
 export default function SmartDataGrid<T extends {
+    firstName: string,
+    lastName: string,
     name?: string;
     title?: string;
     id: number | string
@@ -143,7 +145,7 @@ export default function SmartDataGrid<T extends {
 
         const confirmed = await confirm({
             title: "Confirm Delete",
-            content: `Are you sure you want to delete ${row.title || row.name}?`
+            content: `Are you sure you want to delete ${row.title || row.name || row.firstName + " "  + row.lastName}?`
         });
 
         if (!confirmed) return;

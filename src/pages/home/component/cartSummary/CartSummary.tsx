@@ -46,6 +46,8 @@ export default function CartSummary() {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<typDeliveryInfo>({
     defaultValues: {
@@ -62,6 +64,7 @@ export default function CartSummary() {
           road: "",
           city: "",
           country: "",
+          house_number: ""
         },
       },
     },
@@ -180,7 +183,7 @@ export default function CartSummary() {
       <CartTotal total={total} />
 
       {orderType === enmOrderType.delivery && (
-        <DeliveryForm register={register} errors={errors} />
+        <DeliveryForm register={register} errors={errors} setValue={setValue} watch={watch}/>
       )}
 
       <PaymentMethodSelector

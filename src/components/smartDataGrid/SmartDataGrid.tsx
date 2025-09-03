@@ -64,8 +64,8 @@ export type SmartDataGridProps<T extends { id: string | number }> = {
 };
 
 export default function SmartDataGrid<T extends {
-    firstName: string,
-    lastName: string,
+    firstName?: string,
+    lastName?: string,
     name?: string;
     title?: string;
     id: number | string

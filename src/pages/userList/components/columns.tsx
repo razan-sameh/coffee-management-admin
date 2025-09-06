@@ -187,13 +187,13 @@ export const getColumns = (
         getActions(id, rowModesModel, {
           ...actions,
           showDetails: false,
-          showDelete: true,
+          showDelete: false,
         }),
     });
   }
   const getRowOptions = () => ({
     showDetails: false,
-    showDelete: true,
+    showDelete: false,
   });
 
   return { columns, getRowOptions };

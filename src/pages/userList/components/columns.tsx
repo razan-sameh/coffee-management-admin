@@ -82,13 +82,16 @@ export const getColumns = (
           }}
         />
       ),
-      renderCell: (params) => (
-        <SelectableArrayCell
-          items={(params.value || []).map(
-            (phone: typPhone) => `${phone.countryCode} ${phone.number}`
-          )}
-        />
-      ),
+      renderCell: (params) => {
+        const phones = Array.isArray(params.value) ? params.value : [];
+        return (
+          <SelectableArrayCell
+            items={phones.map(
+              (phone: typPhone) => `${phone.countryCode} ${phone.number}`
+            )}
+          />
+        );
+      },
     },
     {
       field: "email",
@@ -128,17 +131,20 @@ export const getColumns = (
           }}
         />
       ),
-      renderCell: (params) => (
-        <SelectableArrayCell
-          items={(params.value || []).map((loc: typLocation) =>
-            loc?.address
-              ? `${loc.address.house_number ?? ""} ${loc.address.road ?? ""}, ${
-                  loc.address.city ?? ""
-                }, ${loc.address.country ?? ""}`
-              : "N/A"
-          )}
-        />
-      ),
+      renderCell: (params) => {
+        const addresses = Array.isArray(params.value) ? params.value : [];
+        return (
+          <SelectableArrayCell
+            items={addresses.map((loc: typLocation) =>
+              loc?.address
+                ? `${loc.address.house_number ?? ""} ${
+                    loc.address.road ?? ""
+                  }, ${loc.address.city ?? ""}, ${loc.address.country ?? ""}`
+                : "N/A"
+            )}
+          />
+        );
+      },
     },
     {
       field: "role",

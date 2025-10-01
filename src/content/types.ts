@@ -58,6 +58,7 @@ export type typUser = {
   role: enmRole;
   isActive: boolean;
   fcmToken?: string;
+  createdAt:string
 };
 
 export type typDeliveryInfo = {

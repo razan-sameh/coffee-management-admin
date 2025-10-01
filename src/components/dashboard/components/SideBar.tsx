@@ -7,9 +7,6 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import GroupIcon from '@mui/icons-material/Group';
 import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
-import WidgetsIcon from '@mui/icons-material/Widgets';
-import LocalMallIcon from '@mui/icons-material/LocalMall';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { useNavigate } from 'react-router';
 import { useAppDispatch } from '../../../redux/store';
@@ -19,6 +16,10 @@ import { drawerWidth } from '../DashboardLayout';
 import { useThemeMode } from '../../../provider/ThemeProvider';
 import DrawerHeader from './DrawerHeaderStyle';
 import { useRolePermissions } from '../../../hook/useRolePermissions';
+import { BsBoxSeamFill } from "react-icons/bs";
+import { BiSolidCategory } from "react-icons/bi";
+import { FaShoppingCart } from "react-icons/fa";
+import { TbReportAnalytics } from "react-icons/tb";
 
 const openedMixin = (theme: Theme): CSSObject => ({
     width: drawerWidth,
@@ -71,10 +72,11 @@ export default function SideBar({ open, handleDrawerClose, isMobile }: SideBarPr
     const routelist = [
         { text: "Home", icon: <HomeIcon />, path: "/" },
         { text: "User", icon: <GroupIcon />, path: "user" },
-        { text: "Category", icon: <WidgetsIcon />, path: "category" },
-        { text: "Product", icon: <LocalMallIcon />, path: "product" },
-        { text: "Order", icon: <ReceiptLongIcon />, path: "order" },
-        ...(permissions.canViewReports ? [{ text: "Reports", icon: <BarChartIcon />, path: "reports" }] : [])
+        { text: "Category", icon: <BiSolidCategory size={24} />, path: "category" },
+        { text: "Product", icon: <BsBoxSeamFill size={20} />, path: "product" },
+        { text: "Order", icon: <FaShoppingCart size={20} />, path: "order" },
+        ...(permissions.canViewReports ? [{ text: "Dashboard", icon: <BarChartIcon />, path: "Dashboard" }] : []),
+        ...(permissions.canViewReports ? [{ text: "Reports", icon: <TbReportAnalytics size={24} />, path: "reports" }] : [])
     ];
 
     const logout = () => {

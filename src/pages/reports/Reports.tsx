@@ -60,7 +60,7 @@ export default function Reports() {
     };
 
     return (
-        <Box sx={{ width: '100%', px: { xs: 1, sm: 2, md: 4 } }}>
+        <Box sx={{ width: '100%'}}>
             <Tabs
                 value={tabIndex}
                 onChange={(_, val) => setTabIndex(val)}

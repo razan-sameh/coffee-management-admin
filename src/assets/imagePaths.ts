@@ -23,5 +23,5 @@ export const imagePaths = {
     coffee4,
     homeBG,
     homeBG2,
-    homeBG3
+    homeBG3,
 };

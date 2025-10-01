@@ -163,3 +163,31 @@ export const getOrderById = async (orderId: string): Promise<typOrder | null> =>
         return null;
     }
 };
+
+export const getTodayOrders = (
+  callback: (orders: typOrder[]) => void
+) => {
+  const ordersRef = ref(database, "order");
+
+  const unsubscribe = onValue(ordersRef, (snapshot) => {
+    const data = snapshot.val() || {};
+    const orders: typOrder[] = Object.values(data);
+
+    const today = new Date().toISOString().split("T")[0];
+
+    // Filter only today's orders
+    const todayOrders = orders.filter((order) => {
+      const orderDate = new Date(order.date).toISOString().split("T")[0];
+      return orderDate === today;
+    });
+
+    // Sort newest first & take max 6
+    const sorted = todayOrders
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 6);
+
+    callback(sorted);
+  });
+
+  return () => unsubscribe(); // cleanup
+};

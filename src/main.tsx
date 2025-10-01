@@ -26,6 +26,7 @@ import Reports from './pages/reports/Reports'
 import { FilterProvider } from './provider/FilterProvider'
 import ForgetPassword from './pages/forgetPassword/ForgetPassword'
 import Coffee404 from './pages/coffee404/Coffee404'
+import Dashboard from './pages/dashboard/Dashboard'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -55,6 +56,7 @@ createRoot(document.getElementById('root')!).render(
                           <Route index element={<OrderList />} />
                           <Route path=":id" element={<OrderDetails />} />
                         </Route>
+                        <Route path="Dashboard" element={<Dashboard />} />
                         <Route path="reports" element={<Reports />} />
                       </Route>
                     </Route>

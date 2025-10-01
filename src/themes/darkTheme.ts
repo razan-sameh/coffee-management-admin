@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material";
 export const darkBaseColors = {
-  primary: "#6B3E26",   // Cinnamon brown
+  primary: "#6B3E26", // Cinnamon brown
   background: "#2B1B12", // Very dark warm brown, almost black coffee
   secondary: "#C97B47", // Toasted caramel accent
   lightText: "#F2E6DA", // Creamy beige (like milk foam)
@@ -66,6 +66,14 @@ export const darkTheme = createTheme({
       styleOverrides: {
         root: {
           color: darkBaseColors.lightText, // 👈 Force all icons to lightText
+        },
+      },
+    },
+    MuiListItemIcon: {
+      styleOverrides: {
+        root: {
+          color: darkBaseColors.lightText, // Set default icon color globally
+          text: darkBaseColors.lightText,
         },
       },
     },

@@ -184,7 +184,7 @@ export const getTodayOrders = (
     // Sort newest first & take max 6
     const sorted = todayOrders
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 6);
+      .slice(0, 7);
 
     callback(sorted);
   });

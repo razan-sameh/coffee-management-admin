@@ -104,7 +104,7 @@ export const createOrder = async (
     id: orderId,
     date: moment().format("YYYY-MM-DD HH:mm"),
     platform: enmPlatform.shop,
-    status: enmOrderStatus.Placed,
+    status: enmOrderStatus.Ready,
     delivery: deliveryPrice,
     total: Number((order.SubTotal + deliveryPrice).toFixed(2)),
     ...order,

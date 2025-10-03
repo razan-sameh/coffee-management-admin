@@ -19,7 +19,7 @@ import { useRolePermissions } from '../../../hook/useRolePermissions';
 import { BsBoxSeamFill } from "react-icons/bs";
 import { BiSolidCategory } from "react-icons/bi";
 import { FaShoppingCart } from "react-icons/fa";
-import { TbReportAnalytics } from "react-icons/tb";
+import { BiSolidReport } from "react-icons/bi";
 
 const openedMixin = (theme: Theme): CSSObject => ({
     width: drawerWidth,
@@ -76,7 +76,7 @@ export default function SideBar({ open, handleDrawerClose, isMobile }: SideBarPr
         { text: "Product", icon: <BsBoxSeamFill size={20} />, path: "product" },
         { text: "Order", icon: <FaShoppingCart size={20} />, path: "order" },
         ...(permissions.canViewReports ? [{ text: "Dashboard", icon: <BarChartIcon />, path: "Dashboard" }] : []),
-        ...(permissions.canViewReports ? [{ text: "Reports", icon: <TbReportAnalytics size={24} />, path: "reports" }] : [])
+        ...(permissions.canViewReports ? [{ text: "Reports", icon: <BiSolidReport size={24} />, path: "reports" }] : [])
     ];
 
     const logout = () => {

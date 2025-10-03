@@ -4,6 +4,7 @@ import {
   Typography,
   Stack,
   Box,
+  useTheme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
@@ -13,6 +14,7 @@ import { getTodayOrders } from "../../../database/select";
 
 const NewOrderList = () => {
   const [orders, setOrders] = useState<typOrder[]>([]);
+  const theme = useTheme();
 
   useEffect(() => {
     const unsubscribe = getTodayOrders((data) => {
@@ -32,7 +34,7 @@ const NewOrderList = () => {
           </Typography>
           <Box
             sx={{
-              bgcolor: "#FFA726",
+              bgcolor: theme.palette.secondary.main,
               color: "white",
               borderRadius: "50%",
               width: 24,
@@ -50,10 +52,7 @@ const NewOrderList = () => {
 
         <Stack spacing={2}>
           {orders.map((order) => (
-            <OrderListItem
-              key={order.id}
-              order={order}
-            />
+            <OrderListItem key={order.id} order={order} />
           ))}
         </Stack>
       </CardContent>

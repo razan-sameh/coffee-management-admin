@@ -14,7 +14,7 @@ export default function CartTotal({
       {isDelivery && <Typography>SubTotal: ${total.toFixed(2)}</Typography>}
       {isDelivery && <Typography>Delivery: ${deliveryPrice}</Typography>}
       <Typography fontWeight="bold" mt={1}>
-        Total: ${Number((total + deliveryPrice).toFixed(2))}
+        Total:  ${ isDelivery ? Number((total + deliveryPrice).toFixed(2)) : Number((total).toFixed(2))}
       </Typography>
     </>
   );

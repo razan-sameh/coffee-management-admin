@@ -10,6 +10,7 @@ import { getProductById } from "./select";
 import {
   enmAddToCartMode,
   enmOrderStatus,
+  enmOrderType,
   enmPlatform,
   type enmSize,
 } from "../content/enums";
@@ -105,8 +106,11 @@ export const createOrder = async (
     date: moment().format("YYYY-MM-DD HH:mm"),
     platform: enmPlatform.shop,
     status: enmOrderStatus.Ready,
-    delivery: deliveryPrice,
-    total: Number((order.SubTotal + deliveryPrice).toFixed(2)),
+    delivery: order.orderType === enmOrderType.delivery ? deliveryPrice : 0,
+    total:
+      order.orderType === enmOrderType.delivery
+        ? Number((order.SubTotal + deliveryPrice).toFixed(2))
+        : Number(order.SubTotal.toFixed(2)),
     ...order,
   };
 
